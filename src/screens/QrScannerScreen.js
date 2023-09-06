@@ -12,6 +12,7 @@ import {
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
+import fonts from '../utils/fonts';
 const QrScannerScreen = ({navigation}) => {
   const [isFlash, setIsFlash] = useState(false);
   const onSuccess = event => {
@@ -148,11 +149,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginLeft: 20,
     color: '#ffffff',
+    fontFamily: fonts.PoppinsMedium,
   },
   flashLight_text: {
     marginTop: 10,
     fontSize: 14,
     color: '#ffffff',
+    fontFamily: fonts.PoppinsMedium,
   },
   container: {
     flex: 1,

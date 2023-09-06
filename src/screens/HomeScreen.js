@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   Image,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import React from 'react';
 import BottomBarWithButton from '../component/BottomBarWithButton';
@@ -13,6 +14,7 @@ import EntryCard from '../component/EntryCard';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {LinearTextGradient} from 'react-native-text-gradient';
 import navigationString from '../utils/navigationString';
+import fonts from '../utils/fonts';
 const Data = [
   {
     id: 1,
@@ -51,12 +53,26 @@ const HomeScreen = ({navigation}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar hidden={true} />
+      <StatusBar
+        hidden={false}
+        backgroundColor={'#000000'}
+        barStyle={'light-content'}
+      />
       <View style={styles.logoBanner_view}>
         <Image
           source={require('../../assets/appLogo/logoBanner.png')}
           style={styles.logoBanner}
         />
+        <TouchableOpacity
+          style={styles.profile_logo}
+          onPress={() => {
+            navigation.navigate(navigationString.ProfileScreen);
+          }}>
+          <Image
+            source={require('../../assets/appLogo/blankProfile.png')}
+            style={styles.profile_picture}
+          />
+        </TouchableOpacity>
 
         <View style={styles.progress_circle_view}>
           <AnimatedCircularProgress
@@ -67,7 +83,6 @@ const HomeScreen = ({navigation}) => {
             rotation={0}
             lineCap={'round'}
             // tintColorSecondary="#BD7D08"
-            onAnimationComplete={() => console.log('onAnimationComplete')}
             backgroundColor="#FFFFFF80"
           />
         </View>
@@ -98,6 +113,9 @@ const HomeScreen = ({navigation}) => {
           keyExtractor={item => item.id}
           renderItem={({item, index}) => (
             <EntryCard
+              onPress={() => {
+                navigation.navigate(navigationString.ViewSpendingHours);
+              }}
               key={index}
               userName={item.userName}
               date={item.date}
@@ -127,13 +145,14 @@ const styles = StyleSheet.create({
   },
   list_view: {
     marginTop: 90,
-    height: 260,
+    height: 340,
   },
   recent_heading: {
     color: '#161617',
     fontSize: 20,
     marginLeft: 32,
     marginBottom: 11,
+    fontFamily: fonts.PlusJakartaSansBold,
   },
 
   progress_circle_view: {
@@ -153,10 +172,26 @@ const styles = StyleSheet.create({
   },
   inner_view_text: {
     fontSize: 40,
-    fontFamily:'poppinsRegular'
+    fontFamily: fonts.PoppinsMedium,
   },
   inner_view_subtext: {
     fontSize: 16,
-    fontFamily:'poppinsRegular'
+    fontFamily: fonts.PoppinsRegular,
+  },
+  profile_logo: {
+    width: 48,
+    height: 48,
+    backgroundColor: '#ffffff',
+    borderRadius: 100,
+    position: 'absolute',
+    right: 20,
+    top: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  profile_picture: {
+    width: 43,
+    height: 43,
+    borderRadius: 100,
   },
 });

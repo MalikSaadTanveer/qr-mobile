@@ -3,15 +3,15 @@ import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 const BottomBarWithButton = ({onPress}) => {
   return (
-    <View style={styles.bottom_view}>
-      <TouchableOpacity onPress={onPress}>
-        <LinearGradient
-          colors={['#F3CD6B', '#BD7D08']}
-          style={styles.bottom_view_inner_button}>
-          <Image source={require('../../assets/icons/qrcodeRounded.png')} />
-        </LinearGradient>
-      </TouchableOpacity>
-    </View>
+    // <View style={styles.bottom_view}>
+    <TouchableOpacity onPress={onPress}>
+      <LinearGradient
+        colors={['#F3CD6B', '#BD7D08']}
+        style={styles.bottom_view_inner_button}>
+        <Image source={require('../../assets/icons/qrcodeRounded.png')} />
+      </LinearGradient>
+    </TouchableOpacity>
+    // </View>
   );
 };
 
@@ -32,11 +32,13 @@ const styles = StyleSheet.create({
   bottom_view_inner_button: {
     width: 68,
     height: 68,
-    backgroundColor: 'red',
     borderRadius: 50,
     marginTop: -13,
     elevation: 3,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute',
+    right: 10,
+    bottom: 30,
   },
 });

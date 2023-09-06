@@ -14,6 +14,12 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-SimulatorGolfAcademy-SimulatorGolfAcademyTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-SimulatorGolfAcademy-SimulatorGolfAcademyTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8F9C249B26F04D4C8BC0D96F /* PlusJakartaSansBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B3EF5A76F214059B3B62CCE /* PlusJakartaSansBold.ttf */; };
+		D879AD58FFC64F22936F2000 /* PlusJakartaSansMedium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6A925F2D1112421BAA7E5167 /* PlusJakartaSansMedium.ttf */; };
+		F4E0FC37C5934DB4A16087D0 /* PlusJakartaSansRegular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4933619952143B1A894ED34 /* PlusJakartaSansRegular.ttf */; };
+		3D0985CD212A43FF8E7DCE91 /* PlusJakartaSansSemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 033FBE58DEF2438FA7576919 /* PlusJakartaSansSemiBold.ttf */; };
+		9F67E2AA1CC04F208EC8463C /* PoppinsMedium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D53A4832CF41420DA9F4C5C5 /* PoppinsMedium.ttf */; };
+		A8F0B7A2EEEA4049AAA1774C /* PoppinsRegular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 515D202016F4463599171173 /* PoppinsRegular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +50,12 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SimulatorGolfAcademy/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-SimulatorGolfAcademy-SimulatorGolfAcademyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SimulatorGolfAcademy-SimulatorGolfAcademyTests.release.xcconfig"; path = "Target Support Files/Pods-SimulatorGolfAcademy-SimulatorGolfAcademyTests/Pods-SimulatorGolfAcademy-SimulatorGolfAcademyTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		2B3EF5A76F214059B3B62CCE /* PlusJakartaSansBold.ttf */ = {isa = PBXFileReference; name = "PlusJakartaSansBold.ttf"; path = "../assets/fonts/PlusJakartaSansBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6A925F2D1112421BAA7E5167 /* PlusJakartaSansMedium.ttf */ = {isa = PBXFileReference; name = "PlusJakartaSansMedium.ttf"; path = "../assets/fonts/PlusJakartaSansMedium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D4933619952143B1A894ED34 /* PlusJakartaSansRegular.ttf */ = {isa = PBXFileReference; name = "PlusJakartaSansRegular.ttf"; path = "../assets/fonts/PlusJakartaSansRegular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		033FBE58DEF2438FA7576919 /* PlusJakartaSansSemiBold.ttf */ = {isa = PBXFileReference; name = "PlusJakartaSansSemiBold.ttf"; path = "../assets/fonts/PlusJakartaSansSemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D53A4832CF41420DA9F4C5C5 /* PoppinsMedium.ttf */ = {isa = PBXFileReference; name = "PoppinsMedium.ttf"; path = "../assets/fonts/PoppinsMedium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		515D202016F4463599171173 /* PoppinsRegular.ttf */ = {isa = PBXFileReference; name = "PoppinsRegular.ttf"; path = "../assets/fonts/PoppinsRegular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +134,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				36B230D0F5BA455285544B08 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -147,6 +160,20 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		36B230D0F5BA455285544B08 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				2B3EF5A76F214059B3B62CCE /* PlusJakartaSansBold.ttf */,
+				6A925F2D1112421BAA7E5167 /* PlusJakartaSansMedium.ttf */,
+				D4933619952143B1A894ED34 /* PlusJakartaSansRegular.ttf */,
+				033FBE58DEF2438FA7576919 /* PlusJakartaSansSemiBold.ttf */,
+				D53A4832CF41420DA9F4C5C5 /* PoppinsMedium.ttf */,
+				515D202016F4463599171173 /* PoppinsRegular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -244,6 +271,12 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				8F9C249B26F04D4C8BC0D96F /* PlusJakartaSansBold.ttf in Resources */,
+				D879AD58FFC64F22936F2000 /* PlusJakartaSansMedium.ttf in Resources */,
+				F4E0FC37C5934DB4A16087D0 /* PlusJakartaSansRegular.ttf in Resources */,
+				3D0985CD212A43FF8E7DCE91 /* PlusJakartaSansSemiBold.ttf in Resources */,
+				9F67E2AA1CC04F208EC8463C /* PoppinsMedium.ttf in Resources */,
+				A8F0B7A2EEEA4049AAA1774C /* PoppinsRegular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

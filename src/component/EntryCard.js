@@ -1,9 +1,10 @@
-import {StyleSheet, Text, View, Image, SafeAreaView} from 'react-native';
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {LinearTextGradient} from 'react-native-text-gradient';
-const EntryCard = ({userName, date, time}) => {
+import fonts from '../utils/fonts';
+const EntryCard = ({userName, date, time, onPress}) => {
   return (
-    <SafeAreaView style={{alignItems: 'center'}}>
+    <TouchableOpacity style={{alignItems: 'center'}} onPress={onPress}>
       <View style={styles.card_view}>
         <View style={styles.card_image_text_view}>
           <View style={styles.card_image_view}>
@@ -24,7 +25,7 @@ const EntryCard = ({userName, date, time}) => {
           </LinearTextGradient>
         </View>
       </View>
-    </SafeAreaView>
+    </TouchableOpacity>
   );
 };
 
@@ -57,10 +58,12 @@ const styles = StyleSheet.create({
   card_text_heading: {
     fontSize: 16,
     color: '#161617',
+    fontFamily: fonts.PlusJakartaSansSemiBold,
   },
   card_text_subHeading: {
     fontSize: 12,
     color: '#7D7D82',
+    fontFamily: fonts.PlusJakartaSansRegular,
   },
   card_time_view: {
     width: 80,
@@ -71,6 +74,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card_time_text: {
-    color: '#ffffff',
+    fontFamily: fonts.PlusJakartaSansMedium,
+    fontSize: 12,
   },
 });

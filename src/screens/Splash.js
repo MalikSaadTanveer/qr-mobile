@@ -4,7 +4,7 @@ import navigationString from '../utils/navigationString';
 
 const Splash = ({navigation}) => {
   useEffect(() => {
-    setTimeout(() => navigation.replace(navigationString.Home), 3000);
+    setTimeout(() => navigation.replace(navigationString.SignInScreen), 3000);
   }, []);
   return (
     <SafeAreaView style={styles.container}>

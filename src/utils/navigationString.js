@@ -4,4 +4,7 @@ export default {
   // home
   Home: 'Home',
   QrScannerScreen: 'QrScannerScreen',
+  ViewSpendingHours: 'ViewSpendingHours',
+  SignInScreen: 'SignInScreen',
+  ProfileScreen: 'ProfileScreen',
 };
