@@ -1,14 +1,33 @@
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import React from 'react';
 import fonts from '../utils/fonts';
-
-const HeaderWithLeftButton = ({title, onPress}) => {
+import {GradientBorderView} from '@good-react-native/gradient-border';
+const HeaderWithLeftButton = ({
+  title,
+  onPress,
+  rightIcon,
+  rightOnPress,
+  titleColor,
+}) => {
   return (
     <View style={styles.header_view}>
-      <TouchableOpacity style={styles.headerLeft_button} onPress={onPress}>
-        <Image source={require('../../assets/icons/leftArrow.png')} />
+      <TouchableOpacity onPress={onPress}>
+        <GradientBorderView
+          gradientProps={{
+            colors: ['#F3CD6B', '#BD7D08'],
+          }}
+          style={styles.corner}>
+          <Image source={require('../../assets/icons/arrowLeft.png')} />
+        </GradientBorderView>
       </TouchableOpacity>
-      <Text style={styles.header_title}>{title}</Text>
+      <Text style={[styles.header_title, {color: titleColor}]}>{title}</Text>
+      {rightIcon && (
+        <View style={styles.rightIcon_view}>
+          <TouchableOpacity onPress={rightOnPress}>
+            <Image source={rightIcon} style={styles.rightIcon} />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -23,7 +42,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    // marginTop: 10,
+    marginTop: 10,
+    zIndex: 1,
   },
   headerLeft_button: {
     width: 36,
@@ -44,5 +64,22 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     color: '#000000',
     fontFamily: fonts.PoppinsMedium,
+  },
+  corner: {
+    // position: 'absolute',
+    width: 36,
+    height: 36,
+    borderWidth: 3,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rightIcon_view: {
+    position: 'absolute',
+    right: 30,
+  },
+  rightIcon: {
+    width: 30,
+    height: 30,
   },
 });

@@ -16,16 +16,33 @@ import TextInputWithLabel from '../component/TextInputWithLabel';
 import CheckBox from '@react-native-community/checkbox';
 import CustomButton from '../component/CustomButton';
 import navigationString from '../utils/navigationString';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {USER_LOGIN} from '../utils/config';
+
 const SignInScreen = ({navigation}) => {
-  const [isSignIn, setIsSignIn] = useState(true);
-  const [toggleCheckBox, setToggleCheckBox] = useState(false);
+  // const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handelSignIn = () => {
-    // console.log('email', email);
-    // console.log('password', password);
-    navigation.replace(navigationString.Home);
+  const handelSignIn = async () => {
+    console.log('email', email);
+    console.log('password', password);
+    await axios
+      .post('https://golf-qr-db.vercel.app/api/v1/user/login', {
+        email: email,
+        password: password,
+      })
+      .then(async response => {
+        if (!response?.data?.error) {
+          const userId = JSON.stringify(response?.data?.response?._id);
+          await AsyncStorage.setItem('userId', userId);
+          navigation.navigate(navigationString.Home);
+        }
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -63,7 +80,7 @@ const SignInScreen = ({navigation}) => {
             value={password}
             setValue={setPassword}
           />
-          <View style={styles.middle_button_container}>
+          {/* <View style={styles.middle_button_container}>
             <View style={styles.checkBox_View}>
               <CheckBox
                 disabled={false}
@@ -77,7 +94,7 @@ const SignInScreen = ({navigation}) => {
                 <Text style={styles.forgot_button_text}>Forgot Password?</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View> */}
           <View style={styles.button_view}>
             <CustomButton title={'Sign In'} onPress={handelSignIn} />
           </View>
@@ -98,16 +115,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   image_view: {
-    marginTop: 134,
+    marginTop: 125,
     position: 'relative',
     alignItems: 'center',
   },
   input_container: {
-    height: 353,
+    height: 330,
     width: '100%',
     // backgroundColor: 'yellow',
     backgroundColor: '#ffffff',
-    marginTop: 30,
+    marginTop: 50,
     borderRadius: 12,
   },
   input_container_upper_button_view: {

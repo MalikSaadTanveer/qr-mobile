@@ -15,36 +15,35 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {LinearTextGradient} from 'react-native-text-gradient';
 import navigationString from '../utils/navigationString';
 import fonts from '../utils/fonts';
+import MemberShipCard from '../component/MemberShipCard';
 const Data = [
   {
     id: 1,
-    userName: 'User Name1',
+    voucherID: 'SIM-01',
     date: 'May 6, 2022 	• 7 pm',
-    time: '09:00:00',
+    totalHours: '00:00:00',
+    SpendingHours: '01:30:00',
   },
   {
     id: 2,
-    userName: 'User Name2',
+    voucherID: 'SIM-02',
     date: 'May 6, 2022 	• 7 pm',
-    time: '09:00:00',
+    totalHours: '00:00:00',
+    SpendingHours: '01:30:00',
   },
   {
     id: 3,
-    userName: 'User Name3',
+    voucherID: 'SIM-03',
     date: 'May 6, 2022 	• 7 pm',
-    time: '09:00:00',
+    totalHours: '00:00:00',
+    SpendingHours: '01:30:00',
   },
   {
     id: 4,
-    userName: 'User Name4',
+    voucherID: 'SIM-04',
     date: 'May 6, 2022 	• 7 pm',
-    time: '09:00:00',
-  },
-  {
-    id: 5,
-    userName: 'User Name5',
-    date: 'May 6, 2022 	• 7 pm',
-    time: '09:00:00',
+    totalHours: '00:30:00',
+    SpendingHours: '01:50:00',
   },
 ];
 const HomeScreen = ({navigation}) => {
@@ -63,7 +62,7 @@ const HomeScreen = ({navigation}) => {
           source={require('../../assets/appLogo/logoBanner.png')}
           style={styles.logoBanner}
         />
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.profile_logo}
           onPress={() => {
             navigation.navigate(navigationString.ProfileScreen);
@@ -72,8 +71,8 @@ const HomeScreen = ({navigation}) => {
             source={require('../../assets/appLogo/blankProfile.png')}
             style={styles.profile_picture}
           />
-        </TouchableOpacity>
-
+        </TouchableOpacity> */}
+        {/* 
         <View style={styles.progress_circle_view}>
           <AnimatedCircularProgress
             size={200}
@@ -102,29 +101,32 @@ const HomeScreen = ({navigation}) => {
             end={{x: 0, y: 1}}>
             <Text style={styles.inner_view_subtext}>Total Spending Hours</Text>
           </LinearTextGradient>
-        </View>
+        </View> */}
       </View>
 
       <View style={styles.list_view}>
-        <Text style={styles.recent_heading}>Recently Scanned</Text>
         <FlatList
           showsVerticalScrollIndicator={false}
           data={Data}
           keyExtractor={item => item.id}
-          renderItem={({item, index}) => (
-            <EntryCard
-              onPress={() => {
-                navigation.navigate(navigationString.ViewSpendingHours);
-              }}
-              key={index}
-              userName={item.userName}
-              date={item.date}
-              time={item.time}
-            />
-          )}
+          renderItem={({item, index}) =>
+            index == 0 ? (
+              <Text style={styles.recent_heading}>Membership History</Text>
+            ) : (
+              <MemberShipCard
+                item={item}
+                key={index}
+                onPress={() => {
+                  navigation.navigate(navigationString.MemberShipDetailView, {
+                    item: item,
+                  });
+                }}
+              />
+            )
+          }
         />
       </View>
-      <BottomBarWithButton onPress={handelScan} />
+      {/* <BottomBarWithButton onPress={handelScan} /> */}
     </SafeAreaView>
   );
 };
@@ -134,7 +136,8 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems:'center'
+    // alignItems:'center',
+    backgroundColor: '#FFFFFF',
   },
   logoBanner_view: {
     width: '100%',
@@ -144,14 +147,16 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   list_view: {
-    marginTop: 90,
-    height: 340,
+    marginTop: 26,
+    height: 410,
+    paddingHorizontal: 16,
+    // backgroundColor:'red'
   },
   recent_heading: {
     color: '#161617',
     fontSize: 20,
-    marginLeft: 32,
-    marginBottom: 11,
+    // marginLeft: 32,
+    marginBottom: 10,
     fontFamily: fonts.PlusJakartaSansBold,
   },
 
@@ -193,5 +198,18 @@ const styles = StyleSheet.create({
     width: 43,
     height: 43,
     borderRadius: 100,
+  },
+
+  card_time_view: {
+    width: 88,
+    height: 25,
+    backgroundColor: '#000000',
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  card_time_text: {
+    fontFamily: fonts.PlusJakartaSansMedium,
+    fontSize: 12,
   },
 });

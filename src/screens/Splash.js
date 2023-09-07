@@ -1,11 +1,20 @@
 import {StyleSheet, SafeAreaView, Image, StatusBar} from 'react-native';
 import React, {useEffect} from 'react';
 import navigationString from '../utils/navigationString';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Splash = ({navigation}) => {
   useEffect(() => {
-    setTimeout(() => navigation.replace(navigationString.SignInScreen), 3000);
+    handleUserFlow();
   }, []);
+
+  const handleUserFlow = async () => {
+    const userId = await AsyncStorage.getItem('userId');
+    if (userId) {
+      navigation.replace(navigationString.Home);
+    } else {
+      navigation.replace(navigationString.SignInScreen);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar hidden={true} />

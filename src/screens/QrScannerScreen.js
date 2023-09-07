@@ -8,11 +8,15 @@ import {
   View,
   Image,
   Alert,
+  StatusBar,
+  SafeAreaView,
 } from 'react-native';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
 import fonts from '../utils/fonts';
+import ScannerMaker from '../component/ScannerMaker';
+import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
 const QrScannerScreen = ({navigation}) => {
   const [isFlash, setIsFlash] = useState(false);
   const onSuccess = event => {
@@ -24,8 +28,20 @@ const QrScannerScreen = ({navigation}) => {
     setIsFlash(!isFlash);
   };
   return (
-    <View style={{flex: 1, position: 'relative'}}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor={'#000000'} barStyle={'light-content'} />
       <View style={styles.header_view}>
+        <HeaderWithLeftButton
+          title={'QR Scanner'}
+          onPress={() => {
+            navigation.goBack();
+          }}
+          rightIcon={require('../../assets/icons/flashlight.png')}
+          rightOnPress={handleFlashLight}
+          titleColor={'#FFFFFF'}
+        />
+      </View>
+      {/* <View style={styles.header_view}>
         <TouchableOpacity
           style={styles.headerLeft_button}
           onPress={() => {
@@ -37,7 +53,7 @@ const QrScannerScreen = ({navigation}) => {
           />
         </TouchableOpacity>
         <Text style={styles.header_title}>QR Scanner</Text>
-      </View>
+      </View> */}
 
       <QRCodeScanner
         onRead={onSuccess}
@@ -45,6 +61,7 @@ const QrScannerScreen = ({navigation}) => {
         reactivate={true}
         cameraStyle={{height: '100%'}}
         reactivateTimeout={1000}
+        customMarker={<ScannerMaker />}
         flashMode={
           isFlash
             ? RNCamera.Constants.FlashMode.torch
@@ -78,21 +95,25 @@ const QrScannerScreen = ({navigation}) => {
         //     </TouchableOpacity>
         //   }
       />
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.buttonTouchable}
         onPress={() => {
           handleFlashLight();
         }}>
         <Image source={require('../../assets/icons/flashlight.png')} />
         <Text style={styles.flashLight_text}>Flash Light</Text>
-      </TouchableOpacity>
-    </View>
+      </TouchableOpacity> */}
+    </SafeAreaView>
   );
 };
 
 export default QrScannerScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: 'relative',
+  },
   centerText: {
     // flex: 1,
     // fontSize: 18,
@@ -120,15 +141,15 @@ const styles = StyleSheet.create({
     bottom: 20,
   },
   header_view: {
-    width: 400,
-    height: 56,
+    // width: 400,
+    // height: 56,
     // marginTop: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginTop: 20,
+    // flexDirection: 'row',
+    // alignItems: 'center',
+    // paddingHorizontal: 20,
+    // marginTop: 20,
     position: 'absolute',
-    top: 10,
+    // top: 10,
     zIndex: 1,
   },
   headerLeft_button: {
@@ -157,10 +178,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontFamily: fonts.PoppinsMedium,
   },
-  container: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Light black transparent color
-  },
+
   overlay: {
     flex: 1,
     justifyContent: 'center',

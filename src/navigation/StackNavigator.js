@@ -6,6 +6,7 @@ import QrScannerScreen from '../screens/QrScannerScreen';
 import ViewSpendingHours from '../screens/ViewSpendingHours';
 import SignInScreen from '../screens/SignInScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import MemberShipDetailView from '../screens/MemberShipDetailView';
 const Stack = createStackNavigator();
 
 const StackNavigator = () => {
@@ -28,6 +29,10 @@ const StackNavigator = () => {
       <Stack.Screen
         name={navigationString.ProfileScreen}
         component={ProfileScreen}
+      />
+      <Stack.Screen
+        name={navigationString.MemberShipDetailView}
+        component={MemberShipDetailView}
       />
     </Stack.Navigator>
   );

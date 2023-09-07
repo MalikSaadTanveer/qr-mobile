@@ -7,4 +7,5 @@ export default {
   ViewSpendingHours: 'ViewSpendingHours',
   SignInScreen: 'SignInScreen',
   ProfileScreen: 'ProfileScreen',
+  MemberShipDetailView:'MemberShipDetailView',
 };
