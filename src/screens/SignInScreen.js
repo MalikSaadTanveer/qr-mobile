@@ -26,8 +26,8 @@ const SignInScreen = ({navigation}) => {
   const [password, setPassword] = useState('');
 
   const handelSignIn = async () => {
-    console.log('email', email);
-    console.log('password', password);
+    // console.log('email', email);
+    // console.log('password', password);
     await axios
       .post('https://golf-qr-db.vercel.app/api/v1/user/login', {
         email: email,
@@ -37,7 +37,7 @@ const SignInScreen = ({navigation}) => {
         if (!response?.data?.error) {
           const userId = JSON.stringify(response?.data?.response?._id);
           await AsyncStorage.setItem('userId', userId);
-          navigation.navigate(navigationString.Home);
+          navigation.replace(navigationString.Home);
         }
       })
       .catch(error => {
@@ -56,7 +56,10 @@ const SignInScreen = ({navigation}) => {
           barStyle={'light-content'}
         />
         <View style={styles.image_view}>
-          <Image source={require('../../assets/appLogo/logo.png')} />
+          <Image
+            source={require('../../assets/appLogo/logo.png')}
+            style={styles.logo_image}
+          />
         </View>
         <View style={styles.input_container}>
           <View style={styles.input_container_upper_button_view}>
@@ -115,7 +118,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   image_view: {
-    marginTop: 125,
+    marginTop: 100,
     position: 'relative',
     alignItems: 'center',
   },
@@ -173,5 +176,9 @@ const styles = StyleSheet.create({
   button_view: {
     alignItems: 'center',
     marginTop: 10,
+  },
+  logo_image: {
+    width: 194,
+    height: 159,
   },
 });

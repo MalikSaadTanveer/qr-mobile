@@ -11,13 +11,16 @@ const HeaderWithLeftButton = ({
 }) => {
   return (
     <View style={styles.header_view}>
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={onPress} style={{zIndex: 1}}>
         <GradientBorderView
           gradientProps={{
             colors: ['#F3CD6B', '#BD7D08'],
           }}
           style={styles.corner}>
-          <Image source={require('../../assets/icons/arrowLeft.png')} />
+          <Image
+            source={require('../../assets/icons/leftVector.png')}
+            style={{width: 9, height: 15}}
+          />
         </GradientBorderView>
       </TouchableOpacity>
       <Text style={[styles.header_title, {color: titleColor}]}>{title}</Text>
@@ -42,8 +45,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginTop: 10,
-    zIndex: 1,
   },
   headerLeft_button: {
     width: 36,
@@ -76,10 +77,14 @@ const styles = StyleSheet.create({
   },
   rightIcon_view: {
     position: 'absolute',
-    right: 30,
+    right: 20,
   },
   rightIcon: {
     width: 30,
     height: 30,
+  },
+  leftIcon_button: {
+    width: 37,
+    height: 37,
   },
 });

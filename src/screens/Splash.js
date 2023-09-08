@@ -9,16 +9,27 @@ const Splash = ({navigation}) => {
 
   const handleUserFlow = async () => {
     const userId = await AsyncStorage.getItem('userId');
-    if (userId) {
-      navigation.replace(navigationString.Home);
-    } else {
-      navigation.replace(navigationString.SignInScreen);
-    }
+    // console.log('userId',userId)
+    setTimeout(() => {
+      if (userId) {
+        navigation.replace(navigationString.Home);
+      } else {
+        navigation.replace(navigationString.SignInScreen);
+      }
+    }, 2000);
+    // if (userId) {
+    //   navigation.replace(navigationString.Home);
+    // } else {
+    //   navigation.replace(navigationString.SignInScreen);
+    // }
   };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar hidden={true} />
-      <Image source={require('../../assets/appLogo/logo.png')} />
+      <Image
+        source={require('../../assets/appLogo/logo.png')}
+        style={styles.logo}
+      />
     </SafeAreaView>
   );
 };
@@ -31,5 +42,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  logo: {
+    width: 194,
+    height: 159,
   },
 });

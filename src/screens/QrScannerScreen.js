@@ -10,6 +10,8 @@ import {
   Alert,
   StatusBar,
   SafeAreaView,
+  Modal,
+  Pressable,
 } from 'react-native';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
@@ -17,15 +19,53 @@ import {RNCamera} from 'react-native-camera';
 import fonts from '../utils/fonts';
 import ScannerMaker from '../component/ScannerMaker';
 import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
-const QrScannerScreen = ({navigation}) => {
+import axios from 'axios';
+import {ADD_MEMBERSHIP_DETAIL} from '../utils/config';
+import {LinearTextGradient} from 'react-native-text-gradient';
+const QrScannerScreen = ({navigation, route}) => {
+  const {memberShipId, userId, roomId} = route.params;
   const [isFlash, setIsFlash] = useState(false);
-  const onSuccess = event => {
-    const {data} = event;
+  const [isScannerActive, setIsScannerActive] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [response, setResponse] = useState('');
+  // console.log('membership id', memberShipId);
+  // console.log('user id', userId);
+  // console.log('room id', roomId);
 
-    Alert.alert('QR Code Scanned', data);
+  const onSuccess = async event => {
+    const {data} = event;
+    const dataObject = JSON.parse(data);
+    // console.log('data id', dataObject.id);
+    setIsScannerActive(false);
+    try {
+      let response = await axios
+        // .post(ADD_MEMBERSHIP_DETAIL,
+        .post(
+          'https://golf-qr-db.vercel.app/api/v1/membership-details/add-membership-detail',
+          {
+            room_id: dataObject.id,
+            user_id: userId,
+            membership_id: memberShipId,
+          },
+        );
+
+      console.log('response', response.data);
+      setResponse(response.data);
+      setModalVisible(true);
+    } catch (error) {
+      console.log('error', error);
+    }
+
+    // Alert.alert('QR Code Scanned', data);
   };
+
   const handleFlashLight = () => {
     setIsFlash(!isFlash);
+  };
+  // console.log('scanner active', isScannerActive);
+  const handleGoBack = () => {
+    setModalVisible(!modalVisible);
+    navigation.goBack();
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -58,14 +98,14 @@ const QrScannerScreen = ({navigation}) => {
       <QRCodeScanner
         onRead={onSuccess}
         showMarker={true}
-        reactivate={true}
+        reactivate={isScannerActive}
         cameraStyle={{height: '100%'}}
-        reactivateTimeout={1000}
+        reactivateTimeout={2000}
         customMarker={<ScannerMaker />}
         flashMode={
           isFlash
             ? RNCamera.Constants.FlashMode.torch
-            : RNCamera.Constants.FlashMode.on
+            : RNCamera.Constants.FlashMode.off
         }
         //   topContent={
         //     <View style={styles.centerText}>
@@ -103,6 +143,36 @@ const QrScannerScreen = ({navigation}) => {
         <Image source={require('../../assets/icons/flashlight.png')} />
         <Text style={styles.flashLight_text}>Flash Light</Text>
       </TouchableOpacity> */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              {response.error ? response.error_details : response?.success_msg}
+            </Text>
+            <Pressable
+              onPress={() => {
+                handleGoBack();
+              }}>
+              <View style={styles.card_time_view}>
+                <LinearTextGradient
+                  locations={[0, 1]}
+                  colors={['#F3CD6B', '#BD7D08']}
+                  start={{x: 0, y: 0}}
+                  end={{x: 0, y: 1}}>
+                  <Text style={styles.textStyle}>ok</Text>
+                </LinearTextGradient>
+              </View>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -184,5 +254,60 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{rotate: '90deg'}],
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000000d4',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    // padding: 35,
+    width: '80%',
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  // buttonClose: {
+  //   backgroundColor: '#2196F3',
+  // },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 14,
+    marginBottom: 15,
+    textAlign: 'center',
+    fontFamily: fonts.PoppinsRegular,
+  },
+  card_time_view: {
+    width: 88,
+    height: 28,
+    backgroundColor: '#000000',
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

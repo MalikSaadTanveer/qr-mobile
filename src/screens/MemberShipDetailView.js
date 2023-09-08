@@ -6,13 +6,16 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
 import {LinearTextGradient} from 'react-native-text-gradient';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import fonts from '../utils/fonts';
 import navigationString from '../utils/navigationString';
-
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {GET_MEMBERSHIP_BY_ID} from '../utils/config';
+import {useIsFocused} from '@react-navigation/native';
 const checkData = [
   {
     _id: 1,
@@ -58,7 +61,59 @@ const checkData = [
   },
 ];
 
-const MemberShipDetailView = ({navigation}) => {
+const MemberShipDetailView = ({navigation, route}) => {
+  const {memberShipId} = route.params;
+  const isFocused = useIsFocused();
+  const [data, setData] = useState('');
+  const [user_Id, setUser_id] = useState('');
+  const [roomId, setRoomId] = useState('');
+  const [remainingTime, setRemainingTime] = useState(100);
+
+  // const totalTimeInSeconds = (data?.total_hours?.hours * 60 * 60) + (data?.total_hours?.minutes * 60); // 4 hours and 30 minutes in seconds
+  // const referenceTimeInSeconds = 24 * 60 * 60; // 24 hours in seconds
+  // const calculatedProgress = (totalTimeInSeconds / referenceTimeInSeconds) * 100;
+  // console.log('calculatedProgress' , calculatedProgress)
+
+  const remaingTimeCalculate = data => {
+    const totalSeconds =
+      data?.membership?.total_hours?.hours * 3600 +
+      data?.membership?.total_hours?.minutes * 60;
+    const remainingSeconds =
+      data?.membership?.total_remaining_time?.hours * 3600 +
+      data?.membership?.total_remaining_time?.minutes * 60;
+
+    const remainingTimeParentage = (remainingSeconds / totalSeconds) * 100;
+    setRemainingTime(parseInt(remainingTimeParentage));
+    // console.log('remaining time in %', parseInt(remainingTimeParentage));
+  };
+
+  const getMemberShip = async () => {
+    const Id = await AsyncStorage.getItem('userId');
+    const userId = JSON.parse(Id);
+    setUser_id(userId);
+    // console.log('userId' , userId)
+    axios
+      .get(GET_MEMBERSHIP_BY_ID + memberShipId)
+      .then(function (response) {
+        if (!response.data.error) {
+          // console.log('response', response.data.response);
+          setRoomId(response?.data?.response?.membership?.room_id?._id);
+          setData(response?.data?.response);
+          remaingTimeCalculate(response?.data?.response);
+        }
+      })
+      .catch(function (error) {
+        // handle error
+        console.log('error', error);
+      });
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      getMemberShip();
+    }
+  }, [isFocused]);
+  // console.log('data' , data)
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={'#ffffff'} barStyle={'dark-content'} />
@@ -69,7 +124,11 @@ const MemberShipDetailView = ({navigation}) => {
           navigation.goBack();
         }}
         rightOnPress={() => {
-          navigation.navigate(navigationString.QrScannerScreen);
+          navigation.navigate(navigationString.QrScannerScreen, {
+            memberShipId: memberShipId,
+            userId: user_Id,
+            roomId: roomId,
+          });
         }}
         titleColor={'#000000'}
       />
@@ -80,8 +139,8 @@ const MemberShipDetailView = ({navigation}) => {
               <View style={styles.progress_circle_view}>
                 <AnimatedCircularProgress
                   size={147}
-                  width={18}
-                  fill={60}
+                  width={12}
+                  fill={100}
                   tintColor="#EBC15D"
                   rotation={0}
                   lineCap={'round'}
@@ -95,7 +154,13 @@ const MemberShipDetailView = ({navigation}) => {
                   colors={['#F3CD6B', '#BD7D08']}
                   start={{x: 0, y: 0}}
                   end={{x: 0, y: 1}}>
-                  <Text style={styles.inner_view_text}>14:55</Text>
+                  <Text style={styles.inner_view_text}>
+                    {data
+                      ? data?.membership?.total_hours.hours +
+                        ':' +
+                        data?.membership?.total_hours?.minutes
+                      : '00:00'}
+                  </Text>
                 </LinearTextGradient>
                 <LinearTextGradient
                   style={{textAlign: 'center'}}
@@ -110,8 +175,9 @@ const MemberShipDetailView = ({navigation}) => {
               <View style={[styles.progress_circle_view, {left: 180}]}>
                 <AnimatedCircularProgress
                   size={147}
-                  width={18}
-                  fill={60}
+                  width={12}
+                  // fill={50}
+                  fill={remainingTime}
                   tintColor="#EBC15D"
                   rotation={0}
                   lineCap={'round'}
@@ -120,13 +186,19 @@ const MemberShipDetailView = ({navigation}) => {
                 />
               </View>
 
-              <View style={[styles.progress_circle_inner_view, {left: 87}]}>
+              <View style={[styles.progress_circle_inner_view, {left: 67}]}>
                 <LinearTextGradient
                   locations={[0, 1]}
                   colors={['#F3CD6B', '#BD7D08']}
                   start={{x: 0, y: 0}}
                   end={{x: 0, y: 1}}>
-                  <Text style={styles.inner_view_text}>14:55</Text>
+                  <Text style={styles.inner_view_text}>
+                    {data?.membership?.total_remaining_time
+                      ? data?.membership?.total_remaining_time?.hours +
+                        ':' +
+                        data?.membership?.total_remaining_time?.minutes
+                      : '00:00'}
+                  </Text>
                 </LinearTextGradient>
                 <LinearTextGradient
                   style={{textAlign: 'center'}}
@@ -142,7 +214,7 @@ const MemberShipDetailView = ({navigation}) => {
             <View style={styles.text_view}>
               <Text style={styles.text_view_heading}>Membership Expiry</Text>
               <Text style={styles.text_view_subText}>
-                Wednesday, 6 September 2023
+                {data?.membership?.expiry_date}
               </Text>
             </View>
             <View style={styles.meddle_text_view}>
@@ -150,13 +222,17 @@ const MemberShipDetailView = ({navigation}) => {
                 <Text style={styles.meddle_text_subView_heading}>
                   Room Number
                 </Text>
-                <Text style={styles.meddle_text_subView_text}>SIM-023548</Text>
+                <Text style={styles.meddle_text_subView_text}>
+                  {data?.membership?.room_id?.room_number}
+                </Text>
               </View>
               <View style={styles.meddle_text_subView}>
                 <Text style={styles.meddle_text_subView_heading}>
                   Total Amount
                 </Text>
-                <Text style={styles.meddle_text_subView_text}>$2000.00</Text>
+                <Text style={styles.meddle_text_subView_text}>
+                  {data?.membership?.total_amount}
+                </Text>
               </View>
             </View>
             <View style={styles.meddle_text_view}>
@@ -164,13 +240,17 @@ const MemberShipDetailView = ({navigation}) => {
                 <Text style={styles.meddle_text_subView_heading}>
                   Payment Method
                 </Text>
-                <Text style={styles.meddle_text_subView_text}>Cash</Text>
+                <Text style={styles.meddle_text_subView_text}>
+                  {data?.membership?.payment_method}
+                </Text>
               </View>
               <View style={styles.meddle_text_subView}>
                 <Text style={styles.meddle_text_subView_heading}>
                   Payment Receive
                 </Text>
-                <Text style={styles.meddle_text_subView_text}>Cash</Text>
+                <Text style={styles.meddle_text_subView_text}>
+                  {data?.membership?.payment_method}
+                </Text>
               </View>
             </View>
           </View>
@@ -178,7 +258,7 @@ const MemberShipDetailView = ({navigation}) => {
           <Text style={styles.meddle_heading}>Visit History</Text>
 
           <View style={styles.visit_history_view}>
-            {checkData.map((item, index) => (
+            {data?.membership_detail?.map((item, index) => (
               <View key={index}>
                 <View style={{marginTop: 12}} key={item._id}>
                   <LinearTextGradient
@@ -190,11 +270,17 @@ const MemberShipDetailView = ({navigation}) => {
                   </LinearTextGradient>
                 </View>
                 <View style={styles.visit_status_heading_view}>
-                  <Text style={styles.visit_status_heading_text}>Check in</Text>
                   <Text
                     style={[
                       styles.visit_status_heading_text,
-                      {marginLeft: 131},
+                      {fontWeight: 'bold', fontSize: 14},
+                    ]}>
+                    Check in
+                  </Text>
+                  <Text
+                    style={[
+                      styles.visit_status_heading_text,
+                      {fontWeight: 'bold', fontSize: 14},
                     ]}>
                     Check out
                   </Text>
@@ -203,14 +289,17 @@ const MemberShipDetailView = ({navigation}) => {
                 {item.status.map((subItem, index) => (
                   <View style={styles.visit_status_heading_view} key={index}>
                     <Text style={styles.visit_status_heading_text}>
-                      {subItem.checkIn}
+                      {subItem.checkin_time}
                     </Text>
+
                     <Text
                       style={[
                         styles.visit_status_heading_text,
-                        {marginLeft: 110},
+                        // {marginLeft:20},
                       ]}>
-                      {subItem.checkOut ? subItem.checkOut : '________'}
+                      {subItem.checkout_time
+                        ? subItem.checkout_time
+                        : '________'}
                     </Text>
                   </View>
                 ))}
@@ -290,6 +379,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 20,
     elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2, // You can adjust this value
+    shadowRadius: 2,
   },
   progress_circle_view: {
     position: 'absolute',
@@ -298,13 +391,13 @@ const styles = StyleSheet.create({
   progress_circle_inner_view: {
     backgroundColor: '#000000',
     // position: 'absolute',
-    bottom: -17,
-    width: 112,
-    height: 112,
+    bottom: -11,
+    width: 125,
+    height: 125,
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
-    left: 18,
+    left: 11,
     paddingHorizontal: 16,
   },
   inner_view_text: {
@@ -375,6 +468,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 20,
     marginTop: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2, // You can adjust this value
+    shadowRadius: 2,
   },
   visit_date_text: {
     fontSize: 14,
@@ -382,11 +479,14 @@ const styles = StyleSheet.create({
   },
   visit_status_heading_view: {
     flexDirection: 'row',
-    marginVertical: 2,
+    marginVertical: 3,
+    // justifyContent:'space-around',
+    // paddingRight:40,
   },
   visit_status_heading_text: {
     color: '#161617',
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: fonts.PoppinsMedium,
+    width: '50%',
   },
 });
