@@ -4,16 +4,13 @@ import {
   SafeAreaView,
   View,
   StatusBar,
-  TouchableOpacity,
   Text,
+  Alert,
   ScrollView,
-  Platform,
-  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState} from 'react';
 import fonts from '../utils/fonts';
 import TextInputWithLabel from '../component/TextInputWithLabel';
-import CheckBox from '@react-native-community/checkbox';
 import CustomButton from '../component/CustomButton';
 import navigationString from '../utils/navigationString';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,15 +18,13 @@ import axios from 'axios';
 import {USER_LOGIN} from '../utils/config';
 
 const SignInScreen = ({navigation}) => {
-  // const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const [loader, setLoader] = useState(false);
   const handelSignIn = async () => {
-    // console.log('email', email);
-    // console.log('password', password);
+    setLoader(true);
     await axios
-      .post('https://golf-qr-db.vercel.app/api/v1/user/login', {
+      .post(USER_LOGIN, {
         email: email,
         password: password,
       })
@@ -38,18 +33,21 @@ const SignInScreen = ({navigation}) => {
           const userId = JSON.stringify(response?.data?.response?._id);
           await AsyncStorage.setItem('userId', userId);
           navigation.replace(navigationString.Home);
+          setLoader(false);
         }
       })
       .catch(error => {
         console.log('error', error);
+        setLoader(false);
+        Alert.alert(
+          'Incorrect Email & password',
+          'Please Enter correct Email & Password!',
+        );
       });
   };
   return (
     <SafeAreaView style={styles.container}>
-      {/* <ScrollView contentContainerStyle={{alignItems: 'center'}}> */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
-        style={{alignItems: 'center'}}>
+      <ScrollView>
         <StatusBar
           animated={true}
           backgroundColor={'#000000'}
@@ -72,38 +70,27 @@ const SignInScreen = ({navigation}) => {
 
           <TextInputWithLabel
             label={'Email Address'}
-            placeholder={'exmaple123@gmail.com'}
+            placeholder={'Enter Email Address'}
             value={email}
             setValue={setEmail}
           />
           <TextInputWithLabel
             label={'Password'}
-            placeholder={'exmaple123@gmail.com'}
+            placeholder={'Enter Password'}
             isSecure={true}
             value={password}
             setValue={setPassword}
           />
-          {/* <View style={styles.middle_button_container}>
-            <View style={styles.checkBox_View}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBox}
-                onValueChange={newValue => setToggleCheckBox(newValue)}
-              />
-              <Text style={styles.remember_text}>Remember Me</Text>
-            </View>
-            <View>
-              <TouchableOpacity>
-                <Text style={styles.forgot_button_text}>Forgot Password?</Text>
-              </TouchableOpacity>
-            </View>
-          </View> */}
+
           <View style={styles.button_view}>
-            <CustomButton title={'Sign In'} onPress={handelSignIn} />
+            <CustomButton
+              title={'Sign In'}
+              onPress={handelSignIn}
+              loader={loader}
+            />
           </View>
         </View>
-      </KeyboardAvoidingView>
-      {/* </ScrollView> */}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -125,7 +112,6 @@ const styles = StyleSheet.create({
   input_container: {
     height: 330,
     width: '100%',
-    // backgroundColor: 'yellow',
     backgroundColor: '#ffffff',
     marginTop: 50,
     borderRadius: 12,
@@ -166,7 +152,6 @@ const styles = StyleSheet.create({
     color: '#7D7D82',
     fontSize: 14,
     fontFamily: fonts.PoppinsRegular,
-    // marginLeft:20
   },
   forgot_button_text: {
     color: '#161617',

@@ -4,7 +4,6 @@ import fonts from '../utils/fonts';
 import {LinearTextGradient} from 'react-native-text-gradient';
 
 const MemberShipCard = ({item, onPress}) => {
-  // console.log('item', item);
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.upper_view}>
@@ -77,6 +76,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     elevation: 3,
     marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   upper_view: {
     flexDirection: 'row',

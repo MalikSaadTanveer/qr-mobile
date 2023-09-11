@@ -9,7 +9,6 @@ const Splash = ({navigation}) => {
 
   const handleUserFlow = async () => {
     const userId = await AsyncStorage.getItem('userId');
-    // console.log('userId',userId)
     setTimeout(() => {
       if (userId) {
         navigation.replace(navigationString.Home);
@@ -17,11 +16,6 @@ const Splash = ({navigation}) => {
         navigation.replace(navigationString.SignInScreen);
       }
     }, 2000);
-    // if (userId) {
-    //   navigation.replace(navigationString.Home);
-    // } else {
-    //   navigation.replace(navigationString.SignInScreen);
-    // }
   };
   return (
     <SafeAreaView style={styles.container}>

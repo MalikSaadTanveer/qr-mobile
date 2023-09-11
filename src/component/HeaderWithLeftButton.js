@@ -19,13 +19,13 @@ const HeaderWithLeftButton = ({
           style={styles.corner}>
           <Image
             source={require('../../assets/icons/leftVector.png')}
-            style={{width: 9, height: 15}}
+            style={styles.leftIcon_button}
           />
         </GradientBorderView>
       </TouchableOpacity>
       <Text style={[styles.header_title, {color: titleColor}]}>{title}</Text>
       {rightIcon && (
-        <View style={styles.rightIcon_view}>
+        <View>
           <TouchableOpacity onPress={rightOnPress}>
             <Image source={rightIcon} style={styles.rightIcon} />
           </TouchableOpacity>
@@ -39,23 +39,12 @@ export default HeaderWithLeftButton;
 
 const styles = StyleSheet.create({
   header_view: {
-    width: 400,
+    width: '100%',
     height: 56,
-    // marginTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-  },
-  headerLeft_button: {
-    width: 36,
-    height: 36,
-    borderRadius: 100,
-    backgroundColor: '#00000040',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // borderColor: '#c40e0e80',
-    borderColor: '#00000080',
-    borderWidth: 1.5,
+    justifyContent: 'space-between',
   },
   header_title: {
     fontSize: 18,
@@ -67,7 +56,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.PoppinsMedium,
   },
   corner: {
-    // position: 'absolute',
     width: 36,
     height: 36,
     borderWidth: 3,
@@ -75,16 +63,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rightIcon_view: {
-    position: 'absolute',
-    right: 20,
-  },
   rightIcon: {
     width: 30,
     height: 30,
   },
   leftIcon_button: {
-    width: 37,
-    height: 37,
+    width: 9,
+    height: 15,
   },
 });

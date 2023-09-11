@@ -1,12 +1,8 @@
 import React, {useState} from 'react';
-
 import {
   StyleSheet,
   Text,
-  TouchableOpacity,
-  Linking,
   View,
-  Image,
   Alert,
   StatusBar,
   SafeAreaView,
@@ -25,44 +21,30 @@ import {LinearTextGradient} from 'react-native-text-gradient';
 const QrScannerScreen = ({navigation, route}) => {
   const {memberShipId, userId, roomId} = route.params;
   const [isFlash, setIsFlash] = useState(false);
-  const [isScannerActive, setIsScannerActive] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [response, setResponse] = useState('');
-  // console.log('membership id', memberShipId);
-  // console.log('user id', userId);
-  // console.log('room id', roomId);
 
   const onSuccess = async event => {
     const {data} = event;
     const dataObject = JSON.parse(data);
-    // console.log('data id', dataObject.id);
-    setIsScannerActive(false);
     try {
-      let response = await axios
-        // .post(ADD_MEMBERSHIP_DETAIL,
-        .post(
-          'https://golf-qr-db.vercel.app/api/v1/membership-details/add-membership-detail',
-          {
-            room_id: dataObject.id,
-            user_id: userId,
-            membership_id: memberShipId,
-          },
-        );
+      let response = await axios.post(ADD_MEMBERSHIP_DETAIL, {
+        room_id: dataObject.id,
+        user_id: userId,
+        membership_id: memberShipId,
+      });
 
-      console.log('response', response.data);
+      // console.log('response', response.data);
       setResponse(response.data);
       setModalVisible(true);
     } catch (error) {
       console.log('error', error);
     }
-
-    // Alert.alert('QR Code Scanned', data);
   };
 
   const handleFlashLight = () => {
     setIsFlash(!isFlash);
   };
-  // console.log('scanner active', isScannerActive);
   const handleGoBack = () => {
     setModalVisible(!modalVisible);
     navigation.goBack();
@@ -81,68 +63,19 @@ const QrScannerScreen = ({navigation, route}) => {
           titleColor={'#FFFFFF'}
         />
       </View>
-      {/* <View style={styles.header_view}>
-        <TouchableOpacity
-          style={styles.headerLeft_button}
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Image
-            source={require('../../assets/icons/leftArrow.png')}
-            tintColor={'#ffffff'}
-          />
-        </TouchableOpacity>
-        <Text style={styles.header_title}>QR Scanner</Text>
-      </View> */}
 
       <QRCodeScanner
         onRead={onSuccess}
         showMarker={true}
-        reactivate={isScannerActive}
         cameraStyle={{height: '100%'}}
-        reactivateTimeout={2000}
         customMarker={<ScannerMaker />}
         flashMode={
           isFlash
             ? RNCamera.Constants.FlashMode.torch
             : RNCamera.Constants.FlashMode.off
         }
-        //   topContent={
-        //     <View style={styles.centerText}>
-        //       <View style={styles.header_view}>
-        //         <TouchableOpacity
-        //           style={styles.headerLeft_button}
-        //           onPress={() => {
-        //             navigation.goBack();
-        //           }}>
-        //           <Image source={require('../../assets/icons/leftArrow.png')} />
-        //         </TouchableOpacity>
-        //         <Text style={styles.header_title}>QR Scanner</Text>
-        //       </View>
-        //     </View>
-        //   }
-        //   bottomContent={
-        //     <TouchableOpacity
-        //       style={styles.buttonTouchable}
-        //       onPress={() => {
-        //         handleFlashLight();
-        //       }}>
-        //       <Image
-        //         source={require('../../assets/icons/flashlight.png')}
-        //         tintColor={'black'}
-        //       />
-        //       <Text style={styles.flashLight_text}>Flash Light</Text>
-        //     </TouchableOpacity>
-        //   }
       />
-      {/* <TouchableOpacity
-        style={styles.buttonTouchable}
-        onPress={() => {
-          handleFlashLight();
-        }}>
-        <Image source={require('../../assets/icons/flashlight.png')} />
-        <Text style={styles.flashLight_text}>Flash Light</Text>
-      </TouchableOpacity> */}
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -185,10 +118,6 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   centerText: {
-    // flex: 1,
-    // fontSize: 18,
-    // padding: 32,
-    // color: '#777',
     position: 'absolute',
     top: 100,
     right: 50,
@@ -211,15 +140,8 @@ const styles = StyleSheet.create({
     bottom: 20,
   },
   header_view: {
-    // width: 400,
-    // height: 56,
-    // marginTop: 20,
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    // paddingHorizontal: 20,
-    // marginTop: 20,
     position: 'absolute',
-    // top: 10,
+    width: '100%',
     zIndex: 1,
   },
   headerLeft_button: {
@@ -229,7 +151,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF40',
     alignItems: 'center',
     justifyContent: 'center',
-    // borderColor: '#c40e0e80',
     borderColor: '#FFFFFF80',
     borderWidth: 1.5,
   },
@@ -249,13 +170,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.PoppinsMedium,
   },
 
-  overlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    transform: [{rotate: '90deg'}],
-  },
-
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -266,7 +180,7 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,
-    // padding: 35,
+    paddingHorizontal: 18,
     width: '80%',
     height: 120,
     justifyContent: 'center',
@@ -288,9 +202,7 @@ const styles = StyleSheet.create({
   buttonOpen: {
     backgroundColor: '#F194FF',
   },
-  // buttonClose: {
-  //   backgroundColor: '#2196F3',
-  // },
+
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
@@ -301,6 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
     fontFamily: fonts.PoppinsRegular,
+    color: '#000000',
   },
   card_time_view: {
     width: 88,
