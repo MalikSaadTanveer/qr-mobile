@@ -11,18 +11,21 @@ const HeaderWithLeftButton = ({
 }) => {
   return (
     <View style={styles.header_view}>
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={onPress} style={{zIndex: 1}}>
         <GradientBorderView
           gradientProps={{
             colors: ['#F3CD6B', '#BD7D08'],
           }}
           style={styles.corner}>
-          <Image source={require('../../assets/icons/arrowLeft.png')} />
+          <Image
+            source={require('../../assets/icons/leftVector.png')}
+            style={styles.leftIcon_button}
+          />
         </GradientBorderView>
       </TouchableOpacity>
       <Text style={[styles.header_title, {color: titleColor}]}>{title}</Text>
       {rightIcon && (
-        <View style={styles.rightIcon_view}>
+        <View>
           <TouchableOpacity onPress={rightOnPress}>
             <Image source={rightIcon} style={styles.rightIcon} />
           </TouchableOpacity>
@@ -36,25 +39,12 @@ export default HeaderWithLeftButton;
 
 const styles = StyleSheet.create({
   header_view: {
-    width: 400,
+    width: '100%',
     height: 56,
-    // marginTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginTop: 10,
-    zIndex: 1,
-  },
-  headerLeft_button: {
-    width: 36,
-    height: 36,
-    borderRadius: 100,
-    backgroundColor: '#00000040',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // borderColor: '#c40e0e80',
-    borderColor: '#00000080',
-    borderWidth: 1.5,
+    justifyContent: 'space-between',
   },
   header_title: {
     fontSize: 18,
@@ -66,7 +56,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.PoppinsMedium,
   },
   corner: {
-    // position: 'absolute',
     width: 36,
     height: 36,
     borderWidth: 3,
@@ -74,12 +63,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rightIcon_view: {
-    position: 'absolute',
-    right: 30,
-  },
   rightIcon: {
     width: 30,
     height: 30,
+  },
+  leftIcon_button: {
+    width: 9,
+    height: 15,
   },
 });

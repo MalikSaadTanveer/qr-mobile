@@ -14,11 +14,13 @@ const MemberShipCard = ({item, onPress}) => {
             colors={['#F3CD6B', '#BD7D08']}
             start={{x: 0, y: 0}}
             end={{x: 0, y: 1}}>
-            <Text style={styles.card_time_text}>{item.voucherID}</Text>
+            <Text style={styles.card_time_text}>
+              {item?.room_id?.room_number}
+            </Text>
           </LinearTextGradient>
         </View>
       </View>
-      <Text style={styles.middle_text}>{item.voucherID}</Text>
+      <Text style={styles.middle_text}>{item?.room_id?.room_number}</Text>
       <View style={styles.bottom_container_view}>
         <View style={styles.bottom_view}>
           <Text style={styles.bottom_view_text}>Total Hours</Text>
@@ -28,7 +30,13 @@ const MemberShipCard = ({item, onPress}) => {
             start={{x: 0, y: 0}}
             end={{x: 0, y: 1}}>
             <Text style={styles.bottom_view_gradient_text}>
-              {item.totalHours}
+              {item.total_hours
+                ? item?.total_hours?.hours +
+                  ':' +
+                  item?.total_hours?.minutes +
+                  ':' +
+                  item?.total_hours?.seconds
+                : '00:00:00'}
             </Text>
           </LinearTextGradient>
         </View>
@@ -40,7 +48,13 @@ const MemberShipCard = ({item, onPress}) => {
             start={{x: 0, y: 0}}
             end={{x: 0, y: 1}}>
             <Text style={styles.bottom_view_gradient_text}>
-              {item.SpendingHours}
+              {item?.total_remaining_time
+                ? item?.total_remaining_time?.hours +
+                  ':' +
+                  item?.total_remaining_time?.minutes +
+                  ':' +
+                  item?.total_remaining_time?.seconds
+                : '00:00:00'}
             </Text>
           </LinearTextGradient>
         </View>
@@ -62,6 +76,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     elevation: 3,
     marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   upper_view: {
     flexDirection: 'row',

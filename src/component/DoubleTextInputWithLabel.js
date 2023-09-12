@@ -15,7 +15,6 @@ const DoubleTextInputWithLabel = ({
       <View style={styles.input_view}>
         <Text style={styles.input_label}>{firstLabel}</Text>
         <TextInput
-          // placeholder="Enter First Name"
           style={styles.input}
           placeholderTextColor={'#7D7D82'}
           value={firstValue}
@@ -27,7 +26,6 @@ const DoubleTextInputWithLabel = ({
       <View style={styles.input_view}>
         <Text style={styles.input_label}>{lastLabel}</Text>
         <TextInput
-          // placeholder="Enter First Name"
           style={styles.input}
           placeholderTextColor={'#7D7D82'}
           value={lastValue}

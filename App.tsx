@@ -1,15 +1,18 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { NavigationContainer } from '@react-navigation/native';
+import {StyleSheet, Text, View} from 'react-native';
+import React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
 import StackNavigator from './src/navigation/StackNavigator';
+import {MenuProvider} from 'react-native-popup-menu';
 const App = () => {
   return (
-    <NavigationContainer>
-      <StackNavigator/>
-    </NavigationContainer>
-  )
-}
+    <MenuProvider>
+      <NavigationContainer>
+        <StackNavigator />
+      </NavigationContainer>
+    </MenuProvider>
+  );
+};
 
-export default App
+export default App;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
