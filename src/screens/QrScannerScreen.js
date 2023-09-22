@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,7 +9,6 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
-
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
 import fonts from '../utils/fonts';
@@ -18,37 +17,65 @@ import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
 import axios from 'axios';
 import {ADD_MEMBERSHIP_DETAIL} from '../utils/config';
 import {LinearTextGradient} from 'react-native-text-gradient';
+import navigationString from '../utils/navigationString';
+import {useIsFocused} from '@react-navigation/native';
 const QrScannerScreen = ({navigation, route}) => {
-  const {memberShipId, userId, roomId} = route.params;
+  const isFocused = useIsFocused();
+  // const {memberShipId, userId, roomId} = route.params;
+  // const [isFlash, setIsFlash] = useState(false);
+  // const [modalVisible, setModalVisible] = useState(false);
+  // const [response, setResponse] = useState('');
+
+  // const onSuccess = async event => {
+  //   const {data} = event;
+  //   const dataObject = JSON.parse(data);
+  //   try {
+  //     let response = await axios.post(ADD_MEMBERSHIP_DETAIL, {
+  //       room_id: dataObject.id,
+  //       user_id: userId,
+  //       membership_id: memberShipId,
+  //     });
+
+  //     setResponse(response.data);
+  //     setModalVisible(true);
+  //   } catch (error) {
+  //     console.log('error', error);
+  //   }
+  // };
+
+  // const handleFlashLight = () => {
+  //   setIsFlash(!isFlash);
+  // };
+  // const handleGoBack = () => {
+  //   setModalVisible(!modalVisible);
+  //   navigation.goBack();
+  // };
+  // const {memberShipId, userId, roomId} = route.params;
   const [isFlash, setIsFlash] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [response, setResponse] = useState('');
+  const [isScan, setIsScan] = useState(false);
 
   const onSuccess = async event => {
     const {data} = event;
-    const dataObject = JSON.parse(data);
-    try {
-      let response = await axios.post(ADD_MEMBERSHIP_DETAIL, {
-        room_id: dataObject.id,
-        user_id: userId,
-        membership_id: memberShipId,
-      });
+    // Alert.alert(data);
+    navigation.navigate(navigationString.PinVerificationScreen);
+  };
 
-      // console.log('response', response.data);
-      setResponse(response.data);
-      setModalVisible(true);
-    } catch (error) {
-      console.log('error', error);
+  // const handleFlashLight = () => {
+  //   setIsFlash(!isFlash);
+  // };
+  // const handleGoBack = () => {
+  //   setModalVisible(!modalVisible);
+  //   navigation.goBack();
+  // };
+
+  useEffect(() => {
+    if (isFocused) {
+      console.log('isFocused');
+      setIsScan(true);
     }
-  };
-
-  const handleFlashLight = () => {
-    setIsFlash(!isFlash);
-  };
-  const handleGoBack = () => {
-    setModalVisible(!modalVisible);
-    navigation.goBack();
-  };
+  }, [isFocused]);
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={'#000000'} barStyle={'light-content'} />
@@ -58,13 +85,15 @@ const QrScannerScreen = ({navigation, route}) => {
           onPress={() => {
             navigation.goBack();
           }}
-          rightIcon={require('../../assets/icons/flashlight.png')}
-          rightOnPress={handleFlashLight}
+          // rightIcon={require('../../assets/icons/flashlight.png')}
+          // rightOnPress={handleFlashLight}
           titleColor={'#FFFFFF'}
         />
       </View>
 
       <QRCodeScanner
+        reactivate={isScan}
+        reactivateTimeout={1000}
         onRead={onSuccess}
         showMarker={true}
         cameraStyle={{height: '100%'}}
@@ -87,7 +116,8 @@ const QrScannerScreen = ({navigation, route}) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
-              {response.error ? response.error_details : response?.success_msg}
+              {/* {response.error ? response.error_details : response?.success_msg} */}
+              Hello
             </Text>
             <Pressable
               onPress={() => {

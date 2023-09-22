@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Image,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
@@ -16,71 +17,88 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GET_MEMBERSHIP_BY_ID} from '../utils/config';
 import {useIsFocused} from '@react-navigation/native';
+import TimePicker from '../component/TimePicker';
+import CustomButton from '../component/CustomButton';
 
 const MemberShipDetailView = ({navigation, route}) => {
-  const {memberShipId} = route.params;
+  // const {memberShipId} = route.params;
   const isFocused = useIsFocused();
   const [data, setData] = useState('');
   const [user_Id, setUser_id] = useState('');
   const [roomId, setRoomId] = useState('');
   const [remainingTime, setRemainingTime] = useState(100);
 
-  const remaingTimeCalculate = data => {
-    const totalSeconds =
-      data?.membership?.total_hours?.hours * 3600 +
-      data?.membership?.total_hours?.minutes * 60;
-    const remainingSeconds =
-      data?.membership?.total_remaining_time?.hours * 3600 +
-      data?.membership?.total_remaining_time?.minutes * 60;
+  // const remaingTimeCalculate = data => {
+  //   const totalSeconds =
+  //     data?.membership?.total_hours?.hours * 3600 +
+  //     data?.membership?.total_hours?.minutes * 60;
+  //   const remainingSeconds =
+  //     data?.membership?.total_remaining_time?.hours * 3600 +
+  //     data?.membership?.total_remaining_time?.minutes * 60;
 
-    const remainingTimeParentage = (remainingSeconds / totalSeconds) * 100;
-    setRemainingTime(parseInt(remainingTimeParentage));
+  //   const remainingTimeParentage = (remainingSeconds / totalSeconds) * 100;
+  //   setRemainingTime(parseInt(remainingTimeParentage));
+  // };
+
+  // const getMemberShip = async () => {
+  //   const Id = await AsyncStorage.getItem('userId');
+  //   const userId = JSON.parse(Id);
+  //   setUser_id(userId);
+
+  //   axios
+  //     .get(GET_MEMBERSHIP_BY_ID + memberShipId)
+  //     .then(function (response) {
+  //       if (!response.data.error) {
+  //         setRoomId(response?.data?.response?.membership?.room_id?._id);
+  //         setData(response?.data?.response);
+  //         remaingTimeCalculate(response?.data?.response);
+  //       }
+  //     })
+  //     .catch(function (error) {
+  //       console.log('error', error);
+  //     });
+  // };
+
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     getMemberShip();
+  //   }
+  // }, [isFocused]);
+
+  const handelSave = () => {
+    navigation.replace(navigationString.QrScannerScreen);
   };
-
-  const getMemberShip = async () => {
-    const Id = await AsyncStorage.getItem('userId');
-    const userId = JSON.parse(Id);
-    setUser_id(userId);
-
-    axios
-      .get(GET_MEMBERSHIP_BY_ID + memberShipId)
-      .then(function (response) {
-        if (!response.data.error) {
-          setRoomId(response?.data?.response?.membership?.room_id?._id);
-          setData(response?.data?.response);
-          remaingTimeCalculate(response?.data?.response);
-        }
-      })
-      .catch(function (error) {
-        console.log('error', error);
-      });
-  };
-
-  useEffect(() => {
-    if (isFocused) {
-      getMemberShip();
-    }
-  }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={'#ffffff'} barStyle={'dark-content'} />
       <HeaderWithLeftButton
         title={'MemberShip Detail'}
-        rightIcon={require('../../assets/icons/scannerLogo.png')}
+        leftIcon={true}
+        // rightIcon={require('../../assets/icons/scannerLogo.png')}
         onPress={() => {
           navigation.goBack();
         }}
-        rightOnPress={() => {
-          navigation.navigate(navigationString.QrScannerScreen, {
-            memberShipId: memberShipId,
-            userId: user_Id,
-            roomId: roomId,
-          });
-        }}
+        // rightOnPress={() => {
+        //   navigation.navigate(navigationString.QrScannerScreen, {
+        //     memberShipId: memberShipId,
+        //     userId: user_Id,
+        //     roomId: roomId,
+        //   });
+        // }}
         titleColor={'#000000'}
       />
       <ScrollView>
+        <View style={styles.current_date_view}>
+          <Text style={styles.label}>Current Date </Text>
+          <View style={[styles.textInput_view]}>
+            {/* <Text style={styles.text_view_heading}>Membership Expiry</Text> */}
+            <Text style={styles.text_view_subText}>
+              {/* {data?.membership?.expiry_date} */}
+              Wednesday, 6 September 2023
+            </Text>
+          </View>
+        </View>
         <View style={styles.content_container}>
           <View style={styles.upper_content_view}>
             <View style={styles.progress_circle_container}>
@@ -160,11 +178,32 @@ const MemberShipDetailView = ({navigation, route}) => {
                 </View>
               </View>
             </View>
+            <View style={[styles.meddle_text_view, {marginTop: 30}]}>
+              <View style={styles.meddle_text_subView}>
+                <Text style={styles.meddle_text_subView_heading}>
+                  Voucher ID
+                </Text>
+                <Text style={styles.meddle_text_subView_text}>
+                  {/* {data?.membership?.room_id?.room_number} */}
+                  417-154899-23
+                </Text>
+              </View>
+              <View style={styles.meddle_text_subView}>
+                <Text style={styles.meddle_text_subView_heading}>
+                  Member Name
+                </Text>
+                <Text style={styles.meddle_text_subView_text}>
+                  {/* {data?.membership?.total_amount} */}
+                  Haris Mehar
+                </Text>
+              </View>
+            </View>
 
             <View style={styles.text_view}>
               <Text style={styles.text_view_heading}>Membership Expiry</Text>
               <Text style={styles.text_view_subText}>
-                {data?.membership?.expiry_date}
+                {/* {data?.membership?.expiry_date} */}
+                Wednesday, 6 September 2023
               </Text>
             </View>
             <View style={styles.meddle_text_view}>
@@ -173,7 +212,8 @@ const MemberShipDetailView = ({navigation, route}) => {
                   Room Number
                 </Text>
                 <Text style={styles.meddle_text_subView_text}>
-                  {data?.membership?.room_id?.room_number}
+                  {/* {data?.membership?.room_id?.room_number} */}
+                  SIM-0235
                 </Text>
               </View>
               <View style={styles.meddle_text_subView}>
@@ -181,7 +221,8 @@ const MemberShipDetailView = ({navigation, route}) => {
                   Total Amount
                 </Text>
                 <Text style={styles.meddle_text_subView_text}>
-                  {data?.membership?.total_amount}
+                  {/* {data?.membership?.total_amount} */}
+                  $2000.00
                 </Text>
               </View>
             </View>
@@ -191,7 +232,8 @@ const MemberShipDetailView = ({navigation, route}) => {
                   Payment Method
                 </Text>
                 <Text style={styles.meddle_text_subView_text}>
-                  {data?.membership?.payment_method}
+                  {/* {data?.membership?.payment_method} */}
+                  Cash
                 </Text>
               </View>
               <View style={styles.meddle_text_subView}>
@@ -199,15 +241,16 @@ const MemberShipDetailView = ({navigation, route}) => {
                   Payment Receive
                 </Text>
                 <Text style={styles.meddle_text_subView_text}>
-                  {data?.membership?.payment_method}
+                  {/* {data?.membership?.payment_method} */}
+                  Cash
                 </Text>
               </View>
             </View>
           </View>
 
-          <Text style={styles.meddle_heading}>Visit History</Text>
+          {/* <Text style={styles.meddle_heading}>Visit History</Text> */}
 
-          <View style={styles.visit_history_view}>
+          {/* <View style={styles.visit_history_view}>
             {data?.membership_detail?.map((item, index) => (
               <View key={index}>
                 <View style={{marginTop: 12}} key={item._id}>
@@ -250,7 +293,15 @@ const MemberShipDetailView = ({navigation, route}) => {
                 ))}
               </View>
             ))}
-          </View>
+          </View> */}
+        </View>
+        <View style={styles.bottom_view}>
+          <TimePicker label={'Check-In'} isDisabled={false} />
+          <TimePicker label={'Check-Out'} isDisabled={true} />
+        </View>
+
+        <View style={styles.Save_button}>
+          <CustomButton title={'Save'} onPress={handelSave} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -264,20 +315,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
+  current_date_view: {
+    paddingHorizontal: 16,
+  },
   content_container: {
     paddingHorizontal: 16,
     width: '100%',
   },
   upper_content_view: {
     width: '100%',
-    height: 444,
+    // height: 444,
     borderRadius: 12,
     borderColor: '#e9e9e9',
     borderWidth: 1,
     backgroundColor: '#ffffff',
-    marginTop: 30,
+    marginTop: 15,
     paddingHorizontal: 14,
-    paddingVertical: 20,
+    paddingBottom: 10,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
@@ -286,6 +340,7 @@ const styles = StyleSheet.create({
   },
   progress_circle_container: {
     flexDirection: 'row',
+    marginVertical: 10,
   },
   progress_circle: {
     flex: 1,
@@ -318,7 +373,7 @@ const styles = StyleSheet.create({
     height: 63,
     borderRadius: 10,
     backgroundColor: '#F6F6F6',
-    marginTop: 55,
+    marginTop: 20,
     paddingHorizontal: 9,
     paddingVertical: 11,
   },
@@ -391,5 +446,36 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.PoppinsMedium,
     width: '50%',
+  },
+  label: {
+    fontFamily: fonts.PoppinsMedium,
+    fontSize: 15,
+    color: '#000',
+  },
+  textInput_view: {
+    width: '100%',
+    height: 50,
+    borderRadius: 10,
+    backgroundColor: '#F6F6F6',
+    marginTop: 5,
+    paddingHorizontal: 9,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bottom_view: {
+    marginTop: 50,
+    width: '100%',
+    paddingHorizontal: 16,
+  },
+  bottom_view_button_icon: {
+    width: 24,
+    height: 24,
+  },
+  Save_button: {
+    width: '100%',
+    paddingHorizontal: 16,
+    marginTop: 25,
+    marginBottom: 15,
   },
 });
