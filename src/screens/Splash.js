@@ -7,14 +7,19 @@ const Splash = ({navigation}) => {
     handleUserFlow();
   }, []);
 
+  // const handleUserFlow = async () => {
+  //   const userId = await AsyncStorage.getItem('userId');
+  //   setTimeout(() => {
+  //     if (userId) {
+  //       navigation.replace(navigationString.Home);
+  //     } else {
+  //       navigation.replace(navigationString.SignInScreen);
+  //     }
+  //   }, 2000);
+  // };
   const handleUserFlow = async () => {
-    const userId = await AsyncStorage.getItem('userId');
     setTimeout(() => {
-      if (userId) {
-        navigation.replace(navigationString.Home);
-      } else {
-        navigation.replace(navigationString.SignInScreen);
-      }
+      navigation.replace(navigationString.QrScannerScreen);
     }, 2000);
   };
   return (

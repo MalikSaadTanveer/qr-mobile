@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 12,
     marginTop: 30,
-    // paddingHorizontal:16
   },
   update_button_view: {
     alignItems: 'center',

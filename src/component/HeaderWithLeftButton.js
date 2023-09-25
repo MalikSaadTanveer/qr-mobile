@@ -8,22 +8,27 @@ const HeaderWithLeftButton = ({
   rightIcon,
   rightOnPress,
   titleColor,
+  leftIcon,
 }) => {
   return (
     <View style={styles.header_view}>
-      <TouchableOpacity onPress={onPress} style={{zIndex: 1}}>
-        <GradientBorderView
-          gradientProps={{
-            colors: ['#F3CD6B', '#BD7D08'],
-          }}
-          style={styles.corner}>
-          <Image
-            source={require('../../assets/icons/leftVector.png')}
-            style={styles.leftIcon_button}
-          />
-        </GradientBorderView>
-      </TouchableOpacity>
-      <Text style={[styles.header_title, {color: titleColor}]}>{title}</Text>
+      {leftIcon && (
+        <TouchableOpacity onPress={onPress} style={{zIndex: 1}}>
+          <GradientBorderView
+            gradientProps={{
+              colors: ['#F3CD6B', '#BD7D08'],
+            }}
+            style={styles.corner}>
+            <Image
+              source={require('../../assets/icons/leftVector.png')}
+              style={styles.leftIcon_button}
+            />
+          </GradientBorderView>
+        </TouchableOpacity>
+      )}
+      {title && (
+        <Text style={[styles.header_title, {color: titleColor}]}>{title}</Text>
+      )}
       {rightIcon && (
         <View>
           <TouchableOpacity onPress={rightOnPress}>

@@ -40,7 +40,7 @@ const HomeScreen = ({navigation}) => {
         }
       })
       .catch(function (error) {
-        console.log('error', error);
+        console.log('error in home', error);
       });
   };
   const handelOnFresh = () => {
@@ -136,7 +136,6 @@ const styles = StyleSheet.create({
   },
   logoBanner_view: {
     alignItems: 'center',
-    backgroundColor: 'red',
   },
   logoBanner: {
     width: '100%',

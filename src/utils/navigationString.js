@@ -7,4 +7,6 @@ export default {
   SignInScreen: 'SignInScreen',
   ProfileScreen: 'ProfileScreen',
   MemberShipDetailView: 'MemberShipDetailView',
+  PinVerificationScreen:'PinVerificationScreen',
+  RoomListScreen:'RoomListScreen',
 };

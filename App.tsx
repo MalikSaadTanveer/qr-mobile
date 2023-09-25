@@ -1,12 +1,19 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import StackNavigator from './src/navigation/StackNavigator';
 import {MenuProvider} from 'react-native-popup-menu';
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#fff',
+  },
+};
 const App = () => {
   return (
     <MenuProvider>
-      <NavigationContainer>
+      <NavigationContainer theme={MyTheme}>
         <StackNavigator />
       </NavigationContainer>
     </MenuProvider>

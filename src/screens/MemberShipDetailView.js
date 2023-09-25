@@ -5,6 +5,9 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Image,
+  Modal,
+  ActivityIndicator
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
@@ -13,17 +16,22 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import fonts from '../utils/fonts';
 import navigationString from '../utils/navigationString';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {GET_MEMBERSHIP_BY_ID} from '../utils/config';
-import {useIsFocused} from '@react-navigation/native';
+
+import {GET_MEMBERSHIP_BY_ID, UPDATE_MEMBERSHIP_DETAIL , ADD_MEMBERSHIP_DETAIL} from '../utils/config';
+import TimePicker from '../component/TimePicker';
+import CustomButton from '../component/CustomButton';
 
 const MemberShipDetailView = ({navigation, route}) => {
-  const {memberShipId} = route.params;
-  const isFocused = useIsFocused();
-  const [data, setData] = useState('');
-  const [user_Id, setUser_id] = useState('');
-  const [roomId, setRoomId] = useState('');
+  const {responseData} = route.params;
+
+  // const [data, setData] = useState('');
+  // const [user_Id, setUser_id] = useState('');
+  // const [roomId, setRoomId] = useState('');
   const [remainingTime, setRemainingTime] = useState(100);
+  const [time, SetTime] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [updateResponse , setUpdateResponse]=useState(null);
+  const [checkInShow , setCheckInShow]=useState()
 
   const remaingTimeCalculate = data => {
     const totalSeconds =
@@ -37,50 +45,65 @@ const MemberShipDetailView = ({navigation, route}) => {
     setRemainingTime(parseInt(remainingTimeParentage));
   };
 
-  const getMemberShip = async () => {
-    const Id = await AsyncStorage.getItem('userId');
-    const userId = JSON.parse(Id);
-    setUser_id(userId);
+  useEffect(() => {
+    remaingTimeCalculate(responseData);
+  }, []);
 
-    axios
-      .get(GET_MEMBERSHIP_BY_ID + memberShipId)
-      .then(function (response) {
-        if (!response.data.error) {
-          setRoomId(response?.data?.response?.membership?.room_id?._id);
-          setData(response?.data?.response);
-          remaingTimeCalculate(response?.data?.response);
-        }
-      })
-      .catch(function (error) {
-        console.log('error', error);
+
+
+  const handelSave = async () => {
+
+    setModalVisible(true)
+    try {
+      let response = await axios.post(ADD_MEMBERSHIP_DETAIL, {
+        time_in_milliseconds: time,
+        membership_id: responseData?.membership?._id,
       });
+      // console.log('response', response.data);
+
+      if (!response.data.error) {
+        
+        console.log('response', response.data);
+       
+        setUpdateResponse(response.data)
+        setTimeout(() => {
+          setModalVisible(false);
+          navigation.replace(navigationString.QrScannerScreen);
+        }, 1000);
+      
+      }
+      // setModalVisible(true);
+    } catch (error) {
+      console.log('error', error.response.data);
+      // setResponseMessage(error.response.data);
+    }
+
   };
 
-  useEffect(() => {
-    if (isFocused) {
-      getMemberShip();
-    }
-  }, [isFocused]);
+  // console.log('response in detail', responseData);
+  // console.log('total hours', responseData?.total_hours.hours);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={'#ffffff'} barStyle={'dark-content'} />
       <HeaderWithLeftButton
         title={'MemberShip Detail'}
-        rightIcon={require('../../assets/icons/scannerLogo.png')}
+        leftIcon={true}
         onPress={() => {
           navigation.goBack();
         }}
-        rightOnPress={() => {
-          navigation.navigate(navigationString.QrScannerScreen, {
-            memberShipId: memberShipId,
-            userId: user_Id,
-            roomId: roomId,
-          });
-        }}
+
         titleColor={'#000000'}
       />
       <ScrollView>
+        <View style={styles.current_date_view}>
+          <Text style={styles.label}>Current Date </Text>
+          <View style={[styles.textInput_view]}>
+            <Text style={styles.text_view_subText}>
+              Wednesday, 6 September 2023
+            </Text>
+          </View>
+        </View>
         <View style={styles.content_container}>
           <View style={styles.upper_content_view}>
             <View style={styles.progress_circle_container}>
@@ -103,10 +126,10 @@ const MemberShipDetailView = ({navigation, route}) => {
                     start={{x: 0, y: 0}}
                     end={{x: 0, y: 1}}>
                     <Text style={styles.inner_view_text}>
-                      {data
-                        ? data?.membership?.total_hours.hours +
+                      {responseData?.membership?.total_hours
+                        ? responseData?.membership?.total_hours.hours +
                           ':' +
-                          data?.membership?.total_hours?.minutes
+                          responseData?.membership?.total_hours?.minutes
                         : '00:00'}
                     </Text>
                   </LinearTextGradient>
@@ -140,10 +163,12 @@ const MemberShipDetailView = ({navigation, route}) => {
                     start={{x: 0, y: 0}}
                     end={{x: 0, y: 1}}>
                     <Text style={styles.inner_view_text}>
-                      {data?.membership?.total_remaining_time
-                        ? data?.membership?.total_remaining_time?.hours +
+                      {responseData?.membership?.total_remaining_time
+                        ? responseData?.membership?.total_remaining_time
+                            ?.hours +
                           ':' +
-                          data?.membership?.total_remaining_time?.minutes
+                          responseData?.membership?.total_remaining_time
+                            ?.minutes
                         : '00:00'}
                     </Text>
                   </LinearTextGradient>
@@ -160,11 +185,31 @@ const MemberShipDetailView = ({navigation, route}) => {
                 </View>
               </View>
             </View>
+            <View style={[styles.meddle_text_view, {marginTop: 30}]}>
+              <View style={styles.meddle_text_subView}>
+                <Text style={styles.meddle_text_subView_heading}>
+                  Voucher ID
+                </Text>
+                <Text style={styles.meddle_text_subView_text} numberOfLines={1}>
+                  {responseData?.membership?._id}
+                </Text>
+              </View>
+              <View style={styles.meddle_text_subView}>
+                <Text style={styles.meddle_text_subView_heading}>
+                  Member Name
+                </Text>
+                <Text style={styles.meddle_text_subView_text}>
+                  {responseData?.membership?.user_id?.first_name +
+                    ' ' +
+                    responseData?.membership?.user_id?.last_name}
+                </Text>
+              </View>
+            </View>
 
             <View style={styles.text_view}>
               <Text style={styles.text_view_heading}>Membership Expiry</Text>
               <Text style={styles.text_view_subText}>
-                {data?.membership?.expiry_date}
+                {responseData?.membership?.expiry_date}
               </Text>
             </View>
             <View style={styles.meddle_text_view}>
@@ -173,7 +218,7 @@ const MemberShipDetailView = ({navigation, route}) => {
                   Room Number
                 </Text>
                 <Text style={styles.meddle_text_subView_text}>
-                  {data?.membership?.room_id?.room_number}
+                  {responseData?.membership?.room_id?.room_number}
                 </Text>
               </View>
               <View style={styles.meddle_text_subView}>
@@ -181,7 +226,7 @@ const MemberShipDetailView = ({navigation, route}) => {
                   Total Amount
                 </Text>
                 <Text style={styles.meddle_text_subView_text}>
-                  {data?.membership?.total_amount}
+                  {'$' + responseData?.membership?.total_amount}
                 </Text>
               </View>
             </View>
@@ -191,7 +236,7 @@ const MemberShipDetailView = ({navigation, route}) => {
                   Payment Method
                 </Text>
                 <Text style={styles.meddle_text_subView_text}>
-                  {data?.membership?.payment_method}
+                  {responseData?.membership?.payment_method}
                 </Text>
               </View>
               <View style={styles.meddle_text_subView}>
@@ -199,60 +244,69 @@ const MemberShipDetailView = ({navigation, route}) => {
                   Payment Receive
                 </Text>
                 <Text style={styles.meddle_text_subView_text}>
-                  {data?.membership?.payment_method}
+                  {responseData?.membership?.payment_method}
                 </Text>
               </View>
             </View>
           </View>
 
-          <Text style={styles.meddle_heading}>Visit History</Text>
+        </View>
+        <View style={styles.bottom_view}>
+          <TimePicker
+            label={'Check-In'}
+            isDisabled={responseData?.last_in_status === null ? false : true}
+            setTime={SetTime}
+            checkin={responseData?.last_in_status?.checkin_time || null}
+          />
+          <TimePicker
+            label={'Check-Out'}
+            isDisabled={responseData?.last_in_status === null ? true : false}
+            setTime={SetTime}
+            checkin={responseData?.last_in_status?.checkin_out || null}
 
-          <View style={styles.visit_history_view}>
-            {data?.membership_detail?.map((item, index) => (
-              <View key={index}>
-                <View style={{marginTop: 12}} key={item._id}>
+          />
+        </View>
+
+        <View style={styles.Save_button}>
+          <CustomButton title={'Save'} onPress={()=>{handelSave()}} />
+        </View>
+      </ScrollView>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              {!updateResponse ? (
+                <ActivityIndicator size={'large'} />
+              ) : (
+                updateResponse?.error && updateResponse?.error_details
+              )}
+            </Text>
+            {updateResponse?.error && (
+              <Pressable
+                onPress={() => {
+                  handleGoBack();
+                }}>
+                <View style={styles.card_time_view}>
                   <LinearTextGradient
                     locations={[0, 1]}
                     colors={['#F3CD6B', '#BD7D08']}
                     start={{x: 0, y: 0}}
                     end={{x: 0, y: 1}}>
-                    <Text style={styles.visit_date_text}>{item.date}</Text>
+                    <Text style={styles.textStyle}>ok</Text>
                   </LinearTextGradient>
                 </View>
-                <View style={styles.visit_status_heading_view}>
-                  <Text
-                    style={[
-                      styles.visit_status_heading_text,
-                      {fontWeight: 'bold', fontSize: 14},
-                    ]}>
-                    Check in
-                  </Text>
-                  <Text
-                    style={[
-                      styles.visit_status_heading_text,
-                      {fontWeight: 'bold', fontSize: 14},
-                    ]}>
-                    Check out
-                  </Text>
-                </View>
-
-                {item.status.map((subItem, index) => (
-                  <View style={styles.visit_status_heading_view} key={index}>
-                    <Text style={styles.visit_status_heading_text}>
-                      {subItem.checkin_time}
-                    </Text>
-                    <Text style={[styles.visit_status_heading_text]}>
-                      {subItem.checkout_time
-                        ? subItem.checkout_time
-                        : '________'}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            ))}
+              </Pressable>
+            )}
           </View>
         </View>
-      </ScrollView>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -264,20 +318,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
+  current_date_view: {
+    paddingHorizontal: 16,
+  },
   content_container: {
     paddingHorizontal: 16,
     width: '100%',
   },
   upper_content_view: {
     width: '100%',
-    height: 444,
+    // height: 444,
     borderRadius: 12,
     borderColor: '#e9e9e9',
     borderWidth: 1,
     backgroundColor: '#ffffff',
-    marginTop: 30,
+    marginTop: 15,
     paddingHorizontal: 14,
-    paddingVertical: 20,
+    paddingBottom: 10,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
@@ -286,6 +343,7 @@ const styles = StyleSheet.create({
   },
   progress_circle_container: {
     flexDirection: 'row',
+    marginVertical: 10,
   },
   progress_circle: {
     flex: 1,
@@ -318,7 +376,7 @@ const styles = StyleSheet.create({
     height: 63,
     borderRadius: 10,
     backgroundColor: '#F6F6F6',
-    marginTop: 55,
+    marginTop: 20,
     paddingHorizontal: 9,
     paddingVertical: 11,
   },
@@ -392,4 +450,87 @@ const styles = StyleSheet.create({
     fontFamily: fonts.PoppinsMedium,
     width: '50%',
   },
+  label: {
+    fontFamily: fonts.PoppinsMedium,
+    fontSize: 15,
+    color: '#000',
+  },
+  textInput_view: {
+    width: '100%',
+    height: 50,
+    borderRadius: 10,
+    backgroundColor: '#F6F6F6',
+    marginTop: 5,
+    paddingHorizontal: 9,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bottom_view: {
+    marginTop: 50,
+    width: '100%',
+    paddingHorizontal: 16,
+  },
+  bottom_view_button_icon: {
+    width: 24,
+    height: 24,
+  },
+  Save_button: {
+    width: '100%',
+    paddingHorizontal: 16,
+    marginTop: 25,
+    marginBottom: 15,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000000d4',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    paddingHorizontal: 18,
+    width: '80%',
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  // button: {
+  //   borderRadius: 20,
+  //   padding: 10,
+  //   elevation: 2,
+  // },
+  // buttonOpen: {
+  //   backgroundColor: '#F194FF',
+  // },
+
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 14,
+    marginBottom: 15,
+    textAlign: 'center',
+    fontFamily: fonts.PoppinsRegular,
+    color: '#000000',
+  },
+  card_time_view: {
+    width: 88,
+    height: 28,
+    backgroundColor: '#000000',
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',}
 });
