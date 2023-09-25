@@ -9,23 +9,23 @@ const RoomCard = ({onPress, item, isSelected}) => {
         styles.room_button,
         isSelected
           ? {backgroundColor: '#FFAF00', borderColor: '#FFAF00'}
-          : item.IsOccupied
+          : item.is_occupied
           ? {backgroundColor: '#FFAF0029', borderColor: '#FFAF00'}
           : {backgroundColor: '#00B38329', borderColor: '#00B383'},
       ]}
       onPress={() => {
-        onPress(item.id);
+        onPress(item._id , item?.room_number);
       }}>
       <Text
         style={[
           styles.room_button_text,
           isSelected
             ? {color: '#fff'}
-            : item.IsOccupied
+            : item.is_occupied
             ? {color: '#FFAF00'}
             : {color: '#00B383'},
         ]}>
-        {item.name}
+        {item?.room_number}
       </Text>
     </TouchableOpacity>
   );

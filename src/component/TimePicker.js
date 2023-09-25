@@ -2,9 +2,13 @@ import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import React, {useState} from 'react';
 import fonts from '../utils/fonts';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-const TimePicker = ({label , isDisabled}) => {
+const TimePicker = ({label , isDisabled , setTime, checkin}) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(checkin !=null ? new Date(checkin).toLocaleString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  }) : '' );
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -23,6 +27,8 @@ const TimePicker = ({label , isDisabled}) => {
       hour12: true,
     });
     setSelectedDate(formattedTime);
+    // console.log('time',date.getTime())
+    setTime(date.getTime())
     hideDatePicker();
   };
   return (

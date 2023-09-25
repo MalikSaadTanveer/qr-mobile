@@ -7,12 +7,14 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
 import fonts from '../utils/fonts';
 import RoomCard from '../component/RoomCard';
 import CustomButton from '../component/CustomButton';
 import navigationString from '../utils/navigationString';
+import {GET_ALL_ROOMS, UPDATE_MEMBERSHIP_DETAIL_BY_ID} from '../utils/config';
+import axios from 'axios';
 
 const Rooms = [
   {
@@ -67,20 +69,71 @@ const Rooms = [
   },
 ];
 
-const RoomListScreen = ({navigation}) => {
+const RoomListScreen = ({navigation, route}) => {
   const [selectedRoom, setSelectedRoom] = useState('');
+  const [responseRoom, setResponseRoom] = useState('');
+  const [roomObj, setRoomObj] = useState(null);
+  const {responseData} = route.params;
 
-  const handelRoomSelection = id => {
+  const handelRoomSelection = (id, name) => {
     // console.log('id', id);
-    let filterRoom = Rooms.filter(item => item.id === id);
+    let filterRoom = responseRoom.filter(item => item._id === id);
     // console.log('room', filterRoom);
-    if (filterRoom[0].IsOccupied) {
+    if (filterRoom[0].is_occupied) {
       Alert.alert('Room is Already Occupied');
     } else {
       setSelectedRoom(id);
+      setRoomObj({
+        _id: id,
+        room_number: name,
+        is_occupied: true,
+      });
     }
   };
-  console.log('selected room', selectedRoom);
+
+  const getAllRoom = async () => {
+    try {
+      let response = await axios.get(GET_ALL_ROOMS);
+      if (!response.data.error) {
+        // console.log('room in response', response.data.response);
+        setResponseRoom(response.data.response);
+      }
+
+      // setModalVisible(true);
+    } catch (error) {
+      console.log('error', error.response.data);
+    }
+  };
+
+  useEffect(() => {
+    getAllRoom();
+  }, []);
+
+  const handelSave = async () => {
+    console.log('room obj ', roomObj);
+   
+    try {
+      let response = await axios.put(UPDATE_MEMBERSHIP_DETAIL_BY_ID + responseData.response.membership._id, {
+        room_id: selectedRoom,
+      });
+      console.log('room id update response', response.data);
+      if (!response.data.error) {
+        // setResponseRoom( response.data);
+        if (selectedRoom) {
+          let tempData = responseData.response;
+          tempData.membership.room_id = roomObj;
+          console.log('temp data', tempData);
+          navigation.navigate(navigationString.MemberShipDetailView, {
+            responseData: tempData,
+          });
+        }
+      }
+    } catch (error) {
+      // console.log('error', error.response.data);
+    }
+  };
+  // console.log('selected room', selectedRoom);
+  // console.log('room Response', responseData.response.membership._id);
   return (
     <SafeAreaView style={styles.container}>
       <HeaderWithLeftButton
@@ -106,22 +159,24 @@ const RoomListScreen = ({navigation}) => {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.room_list_view}>
-        {Rooms.map((item, index) => (
-          <RoomCard
-            key={index}
-            item={item}
-            onPress={id => {
-              handelRoomSelection(id);
-            }}
-            isSelected={selectedRoom === item.id}
-          />
-        ))}
+        {responseRoom.length > 0 &&
+          responseRoom?.map((item, index) => (
+            <RoomCard
+              key={index}
+              item={item}
+              onPress={(id, name) => {
+                handelRoomSelection(id, name);
+              }}
+              isSelected={selectedRoom === item._id}
+            />
+          ))}
       </ScrollView>
       <View style={styles.button}>
         <CustomButton
           title={'Book'}
           onPress={() => {
-            navigation.navigate(navigationString.MemberShipDetailView);
+            handelSave();
+            // navigation.navigate(navigationString.MemberShipDetailView);
           }}
         />
       </View>

@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Modal,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
@@ -15,7 +16,11 @@ import fonts from '../utils/fonts';
 import ScannerMaker from '../component/ScannerMaker';
 import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
 import axios from 'axios';
-import {ADD_MEMBERSHIP_DETAIL} from '../utils/config';
+import {
+  ADD_MEMBERSHIP_DETAIL,
+  GET_MEMBERSHIP_BY_SCANNING,
+  GET_MEMBERSHIP_BY_ID
+} from '../utils/config';
 import {LinearTextGradient} from 'react-native-text-gradient';
 import navigationString from '../utils/navigationString';
 import {useIsFocused} from '@react-navigation/native';
@@ -53,13 +58,41 @@ const QrScannerScreen = ({navigation, route}) => {
   // const {memberShipId, userId, roomId} = route.params;
   const [isFlash, setIsFlash] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [response, setResponse] = useState('');
+  const [responseData, setResponseData] = useState('');
   const [isScan, setIsScan] = useState(false);
-
+  const [responseMessage , setResponseMessage]=useState('')
   const onSuccess = async event => {
+    // setIsScan(false)
+    // console.log('event' , event)
     const {data} = event;
-    // Alert.alert(data);
-    navigation.navigate(navigationString.PinVerificationScreen);
+    // console.log('data' , data)
+    const dataObject = JSON.parse(data);
+    console.log('data object', dataObject.id);
+
+    setModalVisible(true);
+    try {
+      let response = await axios.get(
+        // GET_MEMBERSHIP_BY_SCANNING + dataObject.id,
+        GET_MEMBERSHIP_BY_ID + dataObject.id,
+      );
+      if (!response.data.error) {
+        setModalVisible(false);
+        setResponseData(response.data);
+        console.log('response in qr_scanner', response.data);
+        navigation.navigate(navigationString.PinVerificationScreen, {
+          Data:response.data,
+        });
+      }
+      else
+      {
+
+      }
+
+      // setModalVisible(true);
+    } catch (error) {
+      console.log('error', error.response.data);
+      setResponseMessage(error.response.data)
+    }
   };
 
   // const handleFlashLight = () => {
@@ -93,7 +126,7 @@ const QrScannerScreen = ({navigation, route}) => {
 
       <QRCodeScanner
         reactivate={isScan}
-        reactivateTimeout={1000}
+        reactivateTimeout={2000}
         onRead={onSuccess}
         showMarker={true}
         cameraStyle={{height: '100%'}}
@@ -116,23 +149,28 @@ const QrScannerScreen = ({navigation, route}) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
-              {/* {response.error ? response.error_details : response?.success_msg} */}
-              Hello
+              {!responseData ? (
+                <ActivityIndicator size={'large'} />
+              ) : (
+                responseData.error && responseData.error_details
+              )}
             </Text>
-            <Pressable
-              onPress={() => {
-                handleGoBack();
-              }}>
-              <View style={styles.card_time_view}>
-                <LinearTextGradient
-                  locations={[0, 1]}
-                  colors={['#F3CD6B', '#BD7D08']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 0, y: 1}}>
-                  <Text style={styles.textStyle}>ok</Text>
-                </LinearTextGradient>
-              </View>
-            </Pressable>
+            {responseData.error && (
+              <Pressable
+                onPress={() => {
+                  handleGoBack();
+                }}>
+                <View style={styles.card_time_view}>
+                  <LinearTextGradient
+                    locations={[0, 1]}
+                    colors={['#F3CD6B', '#BD7D08']}
+                    start={{x: 0, y: 0}}
+                    end={{x: 0, y: 1}}>
+                    <Text style={styles.textStyle}>ok</Text>
+                  </LinearTextGradient>
+                </View>
+              </Pressable>
+            )}
           </View>
         </View>
       </Modal>
@@ -200,6 +238,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.PoppinsMedium,
   },
 
+
+
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -224,14 +264,14 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
+  // button: {
+  //   borderRadius: 20,
+  //   padding: 10,
+  //   elevation: 2,
+  // },
+  // buttonOpen: {
+  //   backgroundColor: '#F194FF',
+  // },
 
   textStyle: {
     color: 'white',
