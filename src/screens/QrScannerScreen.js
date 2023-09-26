@@ -28,11 +28,14 @@ const QrScannerScreen = ({navigation}) => {
   const [isScan, setIsScan] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const onSuccess = async event => {
+    // setIsScan(false);
     const {data} = event;
     const dataObject = JSON.parse(data);
     setModalVisible(true);
     try {
-      let response = await axios.get(GET_MEMBERSHIP_BY_ID + dataObject.id);
+      let response = await axios.get(
+        GET_MEMBERSHIP_BY_ID + dataObject.id + `?is_mobile=true`,
+      );
       if (!response.data.error) {
         setModalVisible(false);
         setResponseData(response.data);
@@ -40,14 +43,13 @@ const QrScannerScreen = ({navigation}) => {
           Data: response.data,
         });
       } else {
-        setModalVisible(true);
-        setResponseMessage(response.data.error_detail);
+        setResponseMessage(response.data.error_details);
+        console.log('error in else', response.data.error_details);
       }
     } catch (error) {
       setResponseMessage(error.response.data);
       setModalVisible(true);
     }
-    setModalVisible(false);
   };
 
   // const handleFlashLight = () => {
@@ -55,6 +57,8 @@ const QrScannerScreen = ({navigation}) => {
   // };
   const handleGoBack = () => {
     setModalVisible(false);
+    setResponseMessage('');
+    setIsScan(true);
   };
 
   useEffect(() => {
@@ -105,7 +109,7 @@ const QrScannerScreen = ({navigation}) => {
                 responseMessage
               )}
             </Text>
-            {responseData.error && (
+            {responseMessage && (
               <Pressable
                 onPress={() => {
                   handleGoBack();

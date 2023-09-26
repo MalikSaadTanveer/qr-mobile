@@ -7,6 +7,7 @@ import {
   ScrollView,
   Modal,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
@@ -26,7 +27,7 @@ const MemberShipDetailView = ({navigation, route}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [updateResponse, setUpdateResponse] = useState(null);
   const [loader, setLoader] = useState();
-
+  const [responseMessage, setResponseMessage] = useState('');
   const remaingTimeCalculate = data => {
     const totalSeconds =
       data?.membership?.total_hours?.hours * 3600 +
@@ -59,11 +60,13 @@ const MemberShipDetailView = ({navigation, route}) => {
         }, 1000);
       } else {
         setModalVisible(true);
-        setResponseMessage(response.data.error_detail);
+        setResponseMessage(response.data.error_details);
+        console.log('else error', response.data);
       }
     } catch (error) {
       setModalVisible(true);
       setResponseMessage(error.response.data);
+      console.log('catch error', error.response.data);
     }
   };
 
@@ -274,13 +277,15 @@ const MemberShipDetailView = ({navigation, route}) => {
             label={'Check-In'}
             isDisabled={responseData?.last_in_status === null ? false : true}
             setTime={SetTime}
+            isCheckoutField={false}
             checkin={responseData?.last_in_status?.checkin_time || null}
           />
           <TimePicker
             label={'Check-Out'}
             isDisabled={responseData?.last_in_status === null ? true : false}
             setTime={SetTime}
-            checkin={responseData?.last_in_status?.checkin_out || null}
+            isCheckoutField={true}
+            checkin={responseData?.last_in_status?.checkin_time || null}
           />
         </View>
 
@@ -304,16 +309,17 @@ const MemberShipDetailView = ({navigation, route}) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
-              {!updateResponse ? (
+              {!responseMessage ? (
                 <ActivityIndicator size={'large'} />
               ) : (
-                updateResponse?.error && updateResponse?.error_details
+                responseMessage
               )}
             </Text>
-            {updateResponse?.error && (
+            {responseMessage && (
               <Pressable
                 onPress={() => {
                   setModalVisible(false);
+                  setResponseMessage('');
                 }}>
                 <View style={styles.card_time_view}>
                   <LinearTextGradient

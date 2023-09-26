@@ -79,7 +79,7 @@ const RoomListScreen = ({navigation, route}) => {
           if (selectedRoom) {
             let tempData = responseData.response;
             tempData.membership.room_id = roomObj;
-            navigation.navigate(navigationString.MemberShipDetailView, {
+            navigation.replace(navigationString.MemberShipDetailView, {
               responseData: tempData,
             });
           }
