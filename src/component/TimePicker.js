@@ -1,14 +1,26 @@
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import React, {useState} from 'react';
 import fonts from '../utils/fonts';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-const TimePicker = ({label , isDisabled , setTime, checkin}) => {
+import {LinearTextGradient} from 'react-native-text-gradient';
+const TimePicker = ({label, isDisabled, setTime, checkin, isCheckoutField}) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(checkin !=null ? new Date(checkin).toLocaleString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-  }) : '' );
+  const [selectedDate, setSelectedDate] = useState(
+    isCheckoutField == false && checkin != null
+      ? new Date(checkin).toLocaleString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+        })
+      : '',
+  );
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -19,6 +31,35 @@ const TimePicker = ({label , isDisabled , setTime, checkin}) => {
   };
 
   const handleConfirm = date => {
+    hideDatePicker();
+    let currentTime = new Date(Date.now()).toUTCString();
+    let selectedTime = new Date(date.getTime()).toUTCString();
+
+    let time_difference = new Date(selectedTime) - new Date(currentTime);
+    console.log(time_difference);
+    if (time_difference > 900000) {
+      setSelectedDate('');
+      setTime('');
+      Alert.alert(
+        'Warning',
+        'You are not allowed to set time more than 15 minutes from now.',
+        [{text: 'ok'}],
+      );
+      return;
+    }
+
+    let checkin_time = new Date(checkin).toUTCString();
+    let checkout_difference = new Date(selectedTime) - new Date(checkin_time);
+
+    if (checkout_difference < 0) {
+      setSelectedDate('');
+      setTime('');
+      Alert.alert('Warning', 'You can not set time before checkin time.', [
+        {text: 'ok'},
+      ]);
+      return;
+    }
+
     console.log('A date has been picked: ', date);
     const timestamp = new Date(date);
     const formattedTime = timestamp.toLocaleString('en-US', {
@@ -27,15 +68,13 @@ const TimePicker = ({label , isDisabled , setTime, checkin}) => {
       hour12: true,
     });
     setSelectedDate(formattedTime);
-    // console.log('time',date.getTime())
-    setTime(date.getTime())
-    hideDatePicker();
+    setTime(date.getTime());
   };
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <TouchableOpacity
-      disabled={isDisabled}
+        disabled={isDisabled}
         style={[styles.textInput_view]}
         onPress={showDatePicker}>
         <Text style={styles.text_view_subText}>
@@ -51,6 +90,7 @@ const TimePicker = ({label , isDisabled , setTime, checkin}) => {
         mode="time"
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
+        date={new Date()}
       />
     </View>
   );
