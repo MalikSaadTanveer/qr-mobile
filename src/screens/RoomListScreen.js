@@ -3,9 +3,10 @@ import {
   Text,
   View,
   SafeAreaView,
-  TouchableOpacity,
   ScrollView,
   Alert,
+  Modal,
+  Pressable,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
@@ -15,72 +16,22 @@ import CustomButton from '../component/CustomButton';
 import navigationString from '../utils/navigationString';
 import {GET_ALL_ROOMS, UPDATE_MEMBERSHIP_DETAIL_BY_ID} from '../utils/config';
 import axios from 'axios';
-
-const Rooms = [
-  {
-    id: 1,
-    name: 'SIM-0235',
-    IsOccupied: true,
-  },
-  {
-    id: 2,
-    name: 'SIM-0235',
-    IsOccupied: true,
-  },
-  {
-    id: 3,
-    name: 'SIM-0235',
-    IsOccupied: false,
-  },
-  {
-    id: 4,
-    name: 'SIM-0235',
-    IsOccupied: false,
-  },
-  {
-    id: 5,
-    name: 'SIM-0235',
-    IsOccupied: true,
-  },
-  {
-    id: 6,
-    name: 'SIM-0235',
-    IsOccupied: false,
-  },
-  {
-    id: 7,
-    name: 'SIM-0235',
-    IsOccupied: true,
-  },
-  {
-    id: 8,
-    name: 'SIM-0235',
-    IsOccupied: true,
-  },
-  {
-    id: 9,
-    name: 'SIM-0235',
-    IsOccupied: false,
-  },
-  {
-    id: 10,
-    name: 'SIM-0235',
-    IsOccupied: true,
-  },
-];
+import {LinearTextGradient} from 'react-native-text-gradient';
 
 const RoomListScreen = ({navigation, route}) => {
   const [selectedRoom, setSelectedRoom] = useState('');
   const [responseRoom, setResponseRoom] = useState('');
   const [roomObj, setRoomObj] = useState(null);
   const {responseData} = route.params;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [loader, setLoader] = useState(false);
 
   const handelRoomSelection = (id, name) => {
-    // console.log('id', id);
     let filterRoom = responseRoom.filter(item => item._id === id);
-    // console.log('room', filterRoom);
     if (filterRoom[0].is_occupied) {
-      Alert.alert('Room is Already Occupied');
+      setModalVisible(true);
+      setModalMessage('Room is Already Occupied');
     } else {
       setSelectedRoom(id);
       setRoomObj({
@@ -95,13 +46,14 @@ const RoomListScreen = ({navigation, route}) => {
     try {
       let response = await axios.get(GET_ALL_ROOMS);
       if (!response.data.error) {
-        // console.log('room in response', response.data.response);
         setResponseRoom(response.data.response);
+      } else {
+        setModalMessage(response.data.error_detail);
+        setModalVisible(true);
       }
-
-      // setModalVisible(true);
     } catch (error) {
-      console.log('error', error.response.data);
+      setModalMessage(error.response.data);
+      setModalVisible(true);
     }
   };
 
@@ -110,30 +62,35 @@ const RoomListScreen = ({navigation, route}) => {
   }, []);
 
   const handelSave = async () => {
-    console.log('room obj ', roomObj);
-   
-    try {
-      let response = await axios.put(UPDATE_MEMBERSHIP_DETAIL_BY_ID + responseData.response.membership._id, {
-        room_id: selectedRoom,
-      });
-      console.log('room id update response', response.data);
-      if (!response.data.error) {
-        // setResponseRoom( response.data);
-        if (selectedRoom) {
-          let tempData = responseData.response;
-          tempData.membership.room_id = roomObj;
-          console.log('temp data', tempData);
-          navigation.navigate(navigationString.MemberShipDetailView, {
-            responseData: tempData,
-          });
+    setLoader(true);
+    if (!selectedRoom) {
+      setModalVisible(true);
+      setModalMessage('Please Select Room First');
+      setLoader(false);
+    } else {
+      try {
+        let response = await axios.put(
+          UPDATE_MEMBERSHIP_DETAIL_BY_ID + responseData.response.membership._id,
+          {
+            room_id: selectedRoom,
+          },
+        );
+        if (!response.data.error) {
+          if (selectedRoom) {
+            let tempData = responseData.response;
+            tempData.membership.room_id = roomObj;
+            navigation.navigate(navigationString.MemberShipDetailView, {
+              responseData: tempData,
+            });
+          }
         }
+      } catch (error) {
+        setModalMessage(error.response.data);
+        setModalVisible(true);
       }
-    } catch (error) {
-      // console.log('error', error.response.data);
+      setLoader(false);
     }
   };
-  // console.log('selected room', selectedRoom);
-  // console.log('room Response', responseData.response.membership._id);
   return (
     <SafeAreaView style={styles.container}>
       <HeaderWithLeftButton
@@ -176,10 +133,39 @@ const RoomListScreen = ({navigation, route}) => {
           title={'Book'}
           onPress={() => {
             handelSave();
-            // navigation.navigate(navigationString.MemberShipDetailView);
           }}
+          loader={loader}
         />
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>{modalMessage}</Text>
+            <Pressable
+              onPress={() => {
+                setModalVisible(false);
+                setModalMessage('');
+              }}>
+              <View style={styles.card_time_view}>
+                <LinearTextGradient
+                  locations={[0, 1]}
+                  colors={['#F3CD6B', '#BD7D08']}
+                  start={{x: 0, y: 0}}
+                  end={{x: 0, y: 1}}>
+                  <Text style={styles.textStyle}>ok</Text>
+                </LinearTextGradient>
+              </View>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -226,5 +212,49 @@ const styles = StyleSheet.create({
   button: {
     marginBottom: 20,
     paddingHorizontal: 20,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000000d4',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    paddingHorizontal: 18,
+    width: '80%',
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 14,
+    marginBottom: 15,
+    textAlign: 'center',
+    fontFamily: fonts.PoppinsRegular,
+    color: '#000000',
+  },
+  card_time_view: {
+    width: 88,
+    height: 28,
+    backgroundColor: '#000000',
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -13,8 +13,6 @@ import fonts from '../utils/fonts';
 import OTPInputFiled from '../component/OTPInputFiled';
 import CustomButton from '../component/CustomButton';
 import navigationString from '../utils/navigationString';
-import axios from 'axios';
-import {GET_MEMBERSHIP_BY_ID} from '../utils/config';
 import {LinearTextGradient} from 'react-native-text-gradient';
 const PinVerificationScreen = ({navigation, route}) => {
   const {Data} = route.params;
@@ -22,48 +20,30 @@ const PinVerificationScreen = ({navigation, route}) => {
   const [loader, setLoader] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+
   const handelSubmit = async () => {
     setLoader(true);
-    // console.log('pin from response' , Data?.response?.membership?.user_id?.pin_code)
-    // console.log('pin from UI' , pinCode)
-    if ( Data?.response?.membership?.user_id?.pin_code === parseInt(pinCode)) {
-      // console.log('pinCode True');
-      
-      if(!Data?.response?.membership.room_id || Data?.response?.membership.room_id === null){
-        navigation.replace(navigationString.RoomListScreen,{
-          responseData : Data
-        })
-      
+    if (Data?.response?.membership?.user_id?.pin_code === parseInt(pinCode)) {
+      if (
+        !Data?.response?.membership.room_id ||
+        Data?.response?.membership.room_id === null
+      ) {
+        navigation.replace(navigationString.RoomListScreen, {
+          responseData: Data,
+        });
+      } else {
+        navigation.replace(navigationString.MemberShipDetailView, {
+          responseData: Data.response,
+        });
       }
-      else{
-        navigation.replace(navigationString.MemberShipDetailView,{
-          responseData : Data.response
-        })
-      }
-      // try {
-      //   let response = await axios.get(
-      //     GET_MEMBERSHIP_BY_ID + Data?.response?._id,
-      //   );
-      //   if (!response.data.error) {
-      //     // console.log('response', response.data);
-      //     setLoader(false);
-      //    navigation.navigate(navigationString.MemberShipDetailView,{
-      //     responseData : response.data
-      //    });
-      //   }
-      // } catch (error) {
-      //   console.log('error', error.response.data);
-      // }
     } else {
       setLoader(false);
       setModalVisible(true);
       setModalMessage('Your PinCode in incorrect!');
-      console.log('pinCode false');
     }
     setLoader(false);
+    setPinCode('');
   };
-
-  // console.log('response in pincode' , Data)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -170,15 +150,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  // button: {
-  //   borderRadius: 20,
-  //   padding: 10,
-  //   elevation: 2,
-  // },
-  // buttonOpen: {
-  //   backgroundColor: '#F194FF',
-  // },
-
   textStyle: {
     color: 'white',
     fontWeight: 'bold',

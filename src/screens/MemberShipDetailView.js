@@ -5,9 +5,8 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
-  Image,
   Modal,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import HeaderWithLeftButton from '../component/HeaderWithLeftButton';
@@ -16,22 +15,17 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import fonts from '../utils/fonts';
 import navigationString from '../utils/navigationString';
 import axios from 'axios';
-
-import {GET_MEMBERSHIP_BY_ID, UPDATE_MEMBERSHIP_DETAIL , ADD_MEMBERSHIP_DETAIL} from '../utils/config';
+import {ADD_MEMBERSHIP_DETAIL} from '../utils/config';
 import TimePicker from '../component/TimePicker';
 import CustomButton from '../component/CustomButton';
 
 const MemberShipDetailView = ({navigation, route}) => {
   const {responseData} = route.params;
-
-  // const [data, setData] = useState('');
-  // const [user_Id, setUser_id] = useState('');
-  // const [roomId, setRoomId] = useState('');
   const [remainingTime, setRemainingTime] = useState(100);
   const [time, SetTime] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [updateResponse , setUpdateResponse]=useState(null);
-  const [checkInShow , setCheckInShow]=useState()
+  const [updateResponse, setUpdateResponse] = useState(null);
+  const [loader, setLoader] = useState();
 
   const remaingTimeCalculate = data => {
     const totalSeconds =
@@ -49,39 +43,67 @@ const MemberShipDetailView = ({navigation, route}) => {
     remaingTimeCalculate(responseData);
   }, []);
 
-
-
   const handelSave = async () => {
-
-    setModalVisible(true)
+    setLoader(true);
+    setModalVisible(true);
     try {
       let response = await axios.post(ADD_MEMBERSHIP_DETAIL, {
         time_in_milliseconds: time,
         membership_id: responseData?.membership?._id,
       });
-      // console.log('response', response.data);
-
       if (!response.data.error) {
-        
-        console.log('response', response.data);
-       
-        setUpdateResponse(response.data)
         setTimeout(() => {
+          setUpdateResponse(response.data);
           setModalVisible(false);
           navigation.replace(navigationString.QrScannerScreen);
         }, 1000);
-      
+      } else {
+        setModalVisible(true);
+        setResponseMessage(response.data.error_detail);
       }
-      // setModalVisible(true);
     } catch (error) {
-      console.log('error', error.response.data);
-      // setResponseMessage(error.response.data);
+      setModalVisible(true);
+      setResponseMessage(error.response.data);
     }
-
   };
 
-  // console.log('response in detail', responseData);
-  // console.log('total hours', responseData?.total_hours.hours);
+  const formatDate = timestamp => {
+    const daysOfWeek = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ];
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    const date = new Date(timestamp);
+
+    const dayOfWeek = daysOfWeek[date.getUTCDay()];
+    const dayOfMonth = date.getUTCDate();
+    const month = months[date.getUTCMonth()];
+    const year = date.getUTCFullYear();
+
+    return `${dayOfWeek}, ${dayOfMonth} ${month} ${year}`;
+  };
+
+  const date = new Date();
+  const FormattedDate = formatDate(date);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -92,16 +114,13 @@ const MemberShipDetailView = ({navigation, route}) => {
         onPress={() => {
           navigation.goBack();
         }}
-
         titleColor={'#000000'}
       />
       <ScrollView>
         <View style={styles.current_date_view}>
           <Text style={styles.label}>Current Date </Text>
           <View style={[styles.textInput_view]}>
-            <Text style={styles.text_view_subText}>
-              Wednesday, 6 September 2023
-            </Text>
+            <Text style={styles.text_view_subText}>{FormattedDate}</Text>
           </View>
         </View>
         <View style={styles.content_container}>
@@ -249,7 +268,6 @@ const MemberShipDetailView = ({navigation, route}) => {
               </View>
             </View>
           </View>
-
         </View>
         <View style={styles.bottom_view}>
           <TimePicker
@@ -263,12 +281,16 @@ const MemberShipDetailView = ({navigation, route}) => {
             isDisabled={responseData?.last_in_status === null ? true : false}
             setTime={SetTime}
             checkin={responseData?.last_in_status?.checkin_out || null}
-
           />
         </View>
 
         <View style={styles.Save_button}>
-          <CustomButton title={'Save'} onPress={()=>{handelSave()}} />
+          <CustomButton
+            title={'Save'}
+            onPress={() => {
+              handelSave();
+            }}
+          />
         </View>
       </ScrollView>
       <Modal
@@ -291,7 +313,7 @@ const MemberShipDetailView = ({navigation, route}) => {
             {updateResponse?.error && (
               <Pressable
                 onPress={() => {
-                  handleGoBack();
+                  setModalVisible(false);
                 }}>
                 <View style={styles.card_time_view}>
                   <LinearTextGradient
@@ -505,15 +527,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  // button: {
-  //   borderRadius: 20,
-  //   padding: 10,
-  //   elevation: 2,
-  // },
-  // buttonOpen: {
-  //   backgroundColor: '#F194FF',
-  // },
-
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
@@ -532,5 +545,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     borderRadius: 40,
     alignItems: 'center',
-    justifyContent: 'center',}
+    justifyContent: 'center',
+  },
 });
