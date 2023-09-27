@@ -61,12 +61,12 @@ const MemberShipDetailView = ({navigation, route}) => {
       } else {
         setModalVisible(true);
         setResponseMessage(response.data.error_details);
-        console.log('else error', response.data);
+      
       }
     } catch (error) {
       setModalVisible(true);
       setResponseMessage(error.response.data);
-      console.log('catch error', error.response.data);
+      
     }
   };
 

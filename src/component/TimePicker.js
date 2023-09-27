@@ -36,7 +36,7 @@ const TimePicker = ({label, isDisabled, setTime, checkin, isCheckoutField}) => {
     let selectedTime = new Date(date.getTime()).toUTCString();
 
     let time_difference = new Date(selectedTime) - new Date(currentTime);
-    console.log(time_difference);
+   
     if (time_difference > 900000) {
       setSelectedDate('');
       setTime('');
@@ -60,7 +60,7 @@ const TimePicker = ({label, isDisabled, setTime, checkin, isCheckoutField}) => {
       return;
     }
 
-    console.log('A date has been picked: ', date);
+   
     const timestamp = new Date(date);
     const formattedTime = timestamp.toLocaleString('en-US', {
       hour: 'numeric',

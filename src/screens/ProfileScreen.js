@@ -14,7 +14,6 @@ const ProfileScreen = ({navigation}) => {
   const [address, setAddress] = useState('example');
   const [photo, setPhoto] = useState(null);
   const handelUpdate = () => {
-    console.log('Update Pressed');
   };
   return (
     <SafeAreaView style={styles.container}>

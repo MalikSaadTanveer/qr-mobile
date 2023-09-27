@@ -1,4 +1,5 @@
-export const BASE_URL = 'https://golf-qr-db.vercel.app';
+// export const BASE_URL = 'https://golf-qr-db.vercel.app';
+export const BASE_URL = 'https://golf-qr-db-tawny.vercel.app/';
 // login endpoint
 export const USER_LOGIN = BASE_URL + '/api/v1/user/login';
 // get membership by user id

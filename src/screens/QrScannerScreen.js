@@ -28,7 +28,6 @@ const QrScannerScreen = ({navigation}) => {
   const [isScan, setIsScan] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const onSuccess = async event => {
-    // setIsScan(false);
     const {data} = event;
     const dataObject = JSON.parse(data);
     setModalVisible(true);
@@ -39,12 +38,12 @@ const QrScannerScreen = ({navigation}) => {
       if (!response.data.error) {
         setModalVisible(false);
         setResponseData(response.data);
+       
         navigation.navigate(navigationString.PinVerificationScreen, {
           Data: response.data,
         });
       } else {
         setResponseMessage(response.data.error_details);
-        console.log('error in else', response.data.error_details);
       }
     } catch (error) {
       setResponseMessage(error.response.data);
@@ -52,9 +51,7 @@ const QrScannerScreen = ({navigation}) => {
     }
   };
 
-  // const handleFlashLight = () => {
-  //   setIsFlash(!isFlash);
-  // };
+  
   const handleGoBack = () => {
     setModalVisible(false);
     setResponseMessage('');
@@ -63,7 +60,7 @@ const QrScannerScreen = ({navigation}) => {
 
   useEffect(() => {
     if (isFocused) {
-      console.log('isFocused');
+      
       setIsScan(true);
     }
   }, [isFocused]);
@@ -73,8 +70,6 @@ const QrScannerScreen = ({navigation}) => {
       <View style={styles.header_view}>
         <HeaderWithLeftButton
           title={'QR Scanner'}
-          // rightIcon={require('../../assets/icons/flashlight.png')}
-          // rightOnPress={handleFlashLight}
           titleColor={'#FFFFFF'}
         />
       </View>

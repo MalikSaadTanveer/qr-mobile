@@ -37,7 +37,7 @@ const SignInScreen = ({navigation}) => {
         }
       })
       .catch(error => {
-        console.log('error', error);
+
         setLoader(false);
         Alert.alert(
           'Incorrect Email & password',

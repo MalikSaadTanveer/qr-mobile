@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {launchImageLibrary} from 'react-native-image-picker';
 const ImagePicker = ({photo, setPhoto}) => {
-  // const [photo, setPhoto] = useState(null);
+
   let options = {
     maxWidth: 500,
     maxHeight: 500,

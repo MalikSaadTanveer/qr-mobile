@@ -40,7 +40,7 @@ const HomeScreen = ({navigation}) => {
         }
       })
       .catch(function (error) {
-        console.log('error in home', error);
+        
       });
   };
   const handelOnFresh = () => {
