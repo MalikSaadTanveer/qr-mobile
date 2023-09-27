@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   upper_view: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 45,
+    paddingHorizontal: 25,
     alignItems: 'center',
     width: '100%',
     marginTop: 20,
@@ -187,7 +187,8 @@ const styles = StyleSheet.create({
   upper_inner_view: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    
   },
   upper_view_text: {
     fontFamily: fonts.PoppinsRegular,
