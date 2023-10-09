@@ -28,8 +28,10 @@ const RoomListScreen = ({navigation, route}) => {
   const [loader, setLoader] = useState(false);
 
   const handelRoomSelection = (id, name) => {
-    let filterRoom = responseRoom.filter(item => item._id === id);
-    if (filterRoom[0].is_occupied) {
+    // let filterRoom = responseRoom.filter(item => item[Object.keys(item)[0]]?.some(itm=>itm._id == id));
+    let filterRoom = findObjectWithId(responseRoom, id)
+    
+    if (filterRoom.length>0 && filterRoom[0].is_occupied) {
       setModalVisible(true);
       setModalMessage('Room is Already Occupied');
     } else {
@@ -42,11 +44,44 @@ const RoomListScreen = ({navigation, route}) => {
     }
   };
 
+  function findObjectWithId(data, id) {
+    for (const item of data) {
+      const key = Object.keys(item)[0]; // Get the key of the current item
+      const innerArray = item[key];
+      for (const innerItem of innerArray) {
+        if (innerItem._id === id) {
+          return  [innerItem] ; // Return the matched object
+        }
+      }
+    }
+    return []; // Return null if no match is found
+  }
+
   const getAllRoom = async () => {
     try {
       let response = await axios.get(GET_ALL_ROOMS);
       if (!response.data.error) {
-        setResponseRoom(response.data.response);
+       
+        const onlyMembershipsRoom = response?.data?.response?.filter(
+          item => item?.room_category !== 'FREE',
+        );
+        let floorDetails = [];
+        onlyMembershipsRoom?.forEach(item => {
+          if (!floorDetails.includes(item?.floor?.floor_number))
+            floorDetails.push(item?.floor?.floor_number);
+        });
+        floorDetails = floorDetails?.sort();
+
+        let roomsWithFloor = [];
+        floorDetails?.forEach(item => {
+          roomsWithFloor?.push({
+            [item]: onlyMembershipsRoom?.filter(
+              itm => itm?.floor?.floor_number === item,
+            ),
+          });
+        });
+
+        setResponseRoom(roomsWithFloor);
       } else {
         setModalMessage(response.data.error_detail);
         setModalVisible(true);
@@ -115,17 +150,26 @@ const RoomListScreen = ({navigation, route}) => {
           <Text style={styles.upper_view_text}>Occupied Room</Text>
         </View>
       </View>
-      <ScrollView contentContainerStyle={styles.room_list_view}>
+      <ScrollView
+      // contentContainerStyle={styles.room_list_view}
+      >
         {responseRoom.length > 0 &&
-          responseRoom?.map((item, index) => (
-            <RoomCard
-              key={index}
-              item={item}
-              onPress={(id, name) => {
-                handelRoomSelection(id, name);
-              }}
-              isSelected={selectedRoom === item._id}
-            />
+          responseRoom?.map((floor, index) => (
+            <View key={index}>
+              <Text style={styles.floorText} >{Object.keys(floor)[0]}</Text>
+              <View style={styles.room_list_view} >
+                {floor[Object.keys(floor)[0]]?.map((item, index) => (
+                  <RoomCard
+                    key={index}
+                    item={item}
+                    onPress={(id, name) => {
+                      handelRoomSelection(id, name);
+                    }}
+                    isSelected={selectedRoom === item._id}
+                  />
+                ))}
+              </View>
+            </View>
           ))}
       </ScrollView>
       <View style={styles.button}>
@@ -188,7 +232,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    
   },
   upper_view_text: {
     fontFamily: fonts.PoppinsRegular,
@@ -204,11 +247,19 @@ const styles = StyleSheet.create({
   },
   room_list_view: {
     flexDirection: 'row',
-    marginTop: 20,
+    marginTop: 6,
     paddingHorizontal: 16,
     width: '100%',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
+  },
+  floorText:{
+    marginHorizontal:16,
+    marginTop:20,
+    color:'black',
+    fontSize:24,
+    fontWeight:'600',
+    fontFamily: fonts.PoppinsRegular,
   },
   button: {
     marginBottom: 20,
