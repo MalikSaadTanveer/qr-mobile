@@ -30,23 +30,31 @@ const QrScannerScreen = ({navigation}) => {
   const onSuccess = async event => {
     const {data} = event;
     const dataObject = JSON.parse(data);
+    if(dataObject){
     setModalVisible(true);
     try {
       let response = await axios.get(
         GET_MEMBERSHIP_BY_ID + dataObject.id + `?is_mobile=true`,
       );
-      if (!response.data.error) {
+      console.log(response)
+      if (!response?.data?.error) {
         setModalVisible(false);
         setResponseData(response.data);
        
         navigation.navigate(navigationString.PinVerificationScreen, {
-          Data: response.data,
+          Data: response?.data,
         });
       } else {
-        setResponseMessage(response.data.error_details);
+        setResponseMessage(response?.data?.error_details);
       }
     } catch (error) {
-      setResponseMessage(error.response.data);
+      console.log("hello")
+      setResponseMessage("Please check your internet connection");
+      setModalVisible(true);
+    }
+    }
+    else{
+      setResponseMessage("There is an error");
       setModalVisible(true);
     }
   };
@@ -231,4 +239,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+})
